@@ -12,7 +12,7 @@ import VoiceRecorder from "./components/VoiceRecorder";
 import VideoCall from "./components/VideoCall";
 import VideoCallNotification from "./components/VideoCallNotification";
 
-const socket = io("http://localhost:5000");
+const socket = io(import.meta.env.VITE_BACKEND_URL);
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
