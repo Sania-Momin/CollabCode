@@ -172,69 +172,93 @@ io.on("connection", (socket) => {
   });
 
   // ✅ File structure events (ADDED BACK - they were missing)
-  socket.on("getFileStructure", async (roomId) => {
-    const fileStructure = await getFileStructure(roomId);
-    socket.emit("fileStructureUpdate", fileStructure);
-  });
+  // In your backend server file - ADD these socket events:
 
-  socket.on("createFile", async ({ roomId, fileName, parentId }) => {
-    const fileStructure = await getFileStructure(roomId);
-    
-    const newFile = {
-      id: `file-${Date.now()}`,
-      name: fileName,
-      type: "file",
-      content: "// New file",
-      parentId: parentId || null,
-    };
+socket.on("getFileStructure", async (roomId) => {
+  const fileStructure = await getFileStructure(roomId);
+  socket.emit("fileStructureUpdate", fileStructure);
+});
 
-    fileStructure.push(newFile);
+socket.on("createFile", async ({ roomId, fileName, parentId }) => {
+  const fileStructure = await getFileStructure(roomId);
+  
+  const newFile = {
+    id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    name: fileName,
+    type: "file",
+    content: "// New file",
+    parentId: parentId || null,
+    createdAt: new Date().toISOString(),
+  };
+
+  fileStructure.push(newFile);
+  await saveFileStructure(roomId, fileStructure);
+  io.to(roomId).emit("fileStructureUpdate", fileStructure);
+  io.to(roomId).emit("fileCreated", newFile);
+});
+
+socket.on("createFolder", async ({ roomId, folderName, parentId }) => {
+  const fileStructure = await getFileStructure(roomId);
+  
+  const newFolder = {
+    id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    name: folderName,
+    type: "folder",
+    parentId: parentId || null,
+    createdAt: new Date().toISOString(),
+  };
+
+  fileStructure.push(newFolder);
+  await saveFileStructure(roomId, fileStructure);
+  io.to(roomId).emit("fileStructureUpdate", fileStructure);
+  io.to(roomId).emit("fileCreated", newFolder);
+});
+
+socket.on("deleteFile", async ({ roomId, fileId }) => {
+  const fileStructure = await getFileStructure(roomId);
+  const updatedStructure = fileStructure.filter(f => f.id !== fileId);
+  
+  await saveFileStructure(roomId, updatedStructure);
+  io.to(roomId).emit("fileStructureUpdate", updatedStructure);
+  io.to(roomId).emit("fileDeleted", fileId);
+});
+
+socket.on("renameFile", async ({ roomId, fileId, name }) => {
+  const fileStructure = await getFileStructure(roomId);
+  const fileIndex = fileStructure.findIndex(f => f.id === fileId);
+  
+  if (fileIndex !== -1) {
+    fileStructure[fileIndex].name = name;
+    fileStructure[fileIndex].lastModified = new Date().toISOString();
     await saveFileStructure(roomId, fileStructure);
     io.to(roomId).emit("fileStructureUpdate", fileStructure);
-  });
+    io.to(roomId).emit("fileRenamed", { id: fileId, name });
+  }
+});
 
-  socket.on("createFolder", async ({ roomId, folderName, parentId }) => {
-    const fileStructure = await getFileStructure(roomId);
-    
-    const newFolder = {
-      id: `folder-${Date.now()}`,
-      name: folderName,
-      type: "folder",
-      parentId: parentId || null,
-    };
-
-    fileStructure.push(newFolder);
+socket.on("updateFileContent", async ({ roomId, fileId, content }) => {
+  const fileStructure = await getFileStructure(roomId);
+  const fileIndex = fileStructure.findIndex(f => f.id === fileId && f.type === "file");
+  
+  if (fileIndex !== -1) {
+    fileStructure[fileIndex].content = content;
+    fileStructure[fileIndex].lastModified = new Date().toISOString();
     await saveFileStructure(roomId, fileStructure);
-    io.to(roomId).emit("fileStructureUpdate", fileStructure);
-  });
+    io.to(roomId).emit("fileContentUpdated", { id: fileId, content });
+  }
+});
 
-  socket.on("selectFile", async ({ roomId, fileId }) => {
-    const fileStructure = await getFileStructure(roomId);
-    const file = fileStructure.find(f => f.id === fileId && f.type === "file");
-    
-    if (file) {
-      io.to(roomId).emit("fileSelected", { file });
-    }
-  });
+socket.on("fileSelected", ({ roomId, file }) => {
+  socket.to(roomId).emit("fileSelected", file);
+});
 
-  socket.on("updateFileContent", async ({ roomId, fileId, content }) => {
-    const fileStructure = await getFileStructure(roomId);
-    const fileIndex = fileStructure.findIndex(f => f.id === fileId && f.type === "file");
-    
-    if (fileIndex !== -1) {
-      fileStructure[fileIndex].content = content;
-      await saveFileStructure(roomId, fileStructure);
-      socket.to(roomId).emit("fileContentUpdated", { id: fileId, content });
-    }
-  });
+socket.on("folderExpanded", ({ roomId, folderId }) => {
+  socket.to(roomId).emit("folderExpanded", folderId);
+});
 
-  socket.on("deleteFile", async ({ roomId, fileId }) => {
-    const fileStructure = await getFileStructure(roomId);
-    const updatedStructure = fileStructure.filter(f => f.id !== fileId);
-    
-    await saveFileStructure(roomId, updatedStructure);
-    io.to(roomId).emit("fileStructureUpdate", updatedStructure);
-  });
+socket.on("folderCollapsed", ({ roomId, folderId }) => {
+  socket.to(roomId).emit("folderCollapsed", folderId);
+});
 
   socket.on("disconnect", () => {
     if (currentRoom && currentUser) {
