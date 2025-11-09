@@ -171,13 +171,76 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("voiceMessage", message);
   });
 
-  // ✅ File structure events omitted for brevity (same code as yours)
+  // ✅ File structure events (ADDED BACK - they were missing)
+  socket.on("getFileStructure", async (roomId) => {
+    const fileStructure = await getFileStructure(roomId);
+    socket.emit("fileStructureUpdate", fileStructure);
+  });
+
+  socket.on("createFile", async ({ roomId, fileName, parentId }) => {
+    const fileStructure = await getFileStructure(roomId);
+    
+    const newFile = {
+      id: `file-${Date.now()}`,
+      name: fileName,
+      type: "file",
+      content: "// New file",
+      parentId: parentId || null,
+    };
+
+    fileStructure.push(newFile);
+    await saveFileStructure(roomId, fileStructure);
+    io.to(roomId).emit("fileStructureUpdate", fileStructure);
+  });
+
+  socket.on("createFolder", async ({ roomId, folderName, parentId }) => {
+    const fileStructure = await getFileStructure(roomId);
+    
+    const newFolder = {
+      id: `folder-${Date.now()}`,
+      name: folderName,
+      type: "folder",
+      parentId: parentId || null,
+    };
+
+    fileStructure.push(newFolder);
+    await saveFileStructure(roomId, fileStructure);
+    io.to(roomId).emit("fileStructureUpdate", fileStructure);
+  });
+
+  socket.on("selectFile", async ({ roomId, fileId }) => {
+    const fileStructure = await getFileStructure(roomId);
+    const file = fileStructure.find(f => f.id === fileId && f.type === "file");
+    
+    if (file) {
+      io.to(roomId).emit("fileSelected", { file });
+    }
+  });
+
+  socket.on("updateFileContent", async ({ roomId, fileId, content }) => {
+    const fileStructure = await getFileStructure(roomId);
+    const fileIndex = fileStructure.findIndex(f => f.id === fileId && f.type === "file");
+    
+    if (fileIndex !== -1) {
+      fileStructure[fileIndex].content = content;
+      await saveFileStructure(roomId, fileStructure);
+      socket.to(roomId).emit("fileContentUpdated", { id: fileId, content });
+    }
+  });
+
+  socket.on("deleteFile", async ({ roomId, fileId }) => {
+    const fileStructure = await getFileStructure(roomId);
+    const updatedStructure = fileStructure.filter(f => f.id !== fileId);
+    
+    await saveFileStructure(roomId, updatedStructure);
+    io.to(roomId).emit("fileStructureUpdate", updatedStructure);
+  });
 
   socket.on("disconnect", () => {
     if (currentRoom && currentUser) {
       rooms.get(currentRoom).delete(currentUser);
       io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom)));
-      io.to(currentRoom).emit("userLeftVideoCall", { userId: socket.id });
+      // ✅ REMOVED: io.to(currentRoom).emit("userLeftVideoCall", { userId: socket.id });
 
       if (rooms.get(currentRoom).size === 0) {
         rooms.delete(currentRoom);
@@ -185,8 +248,6 @@ io.on("connection", (socket) => {
     }
   });
 });
-
-// ✅ REMOVE the frontend serving code — DO NOT include it on Render
 
 // ✅ Start server
 const port = process.env.PORT || 5000;
