@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react"; // Added useRef
 import "./App.css";
 import io from "socket.io-client";
 import Editor from "@monaco-editor/react";
@@ -21,10 +21,10 @@ const ProtectedRoute = ({ children }) => {
   return token && user ? children : <Navigate to="/login" />;
 };
 
-// VoiceMessage component
+// VoiceMessage component - FIXED: useRef instead of useState
 const VoiceMessage = ({ message }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useState(null);
+  const audioRef = useRef(null); // FIXED: Changed from useState to useRef
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -642,10 +642,11 @@ const EditorRoom = () => {
             ))}
           </div>
           
+          {/* FIXED: Removed send button from chat input */}
           <div className="chat-input-container">
             <input
               type="text"
-              placeholder="Type a message..."
+              placeholder="Type a message and press Enter..."
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
@@ -656,12 +657,6 @@ const EditorRoom = () => {
               roomId={roomId}
               userName={userName}
             />
-            <button className="send-button" onClick={sendMessage}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="22" y1="2" x2="11" y2="13"/>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-              </svg>
-            </button>
           </div>
         </div>
       </div>
