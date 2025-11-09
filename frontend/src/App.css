@@ -83,9 +83,6 @@ body {
   --card-hover: rgba(255, 255, 0, 0.3);
 }
 
-
-/* ==================== ADDITIONAL THEME DEFINITIONS ==================== */
-
 /* Monokai Theme */
 [data-theme="monokai"] {
   --bg-primary: #272822;
@@ -900,7 +897,7 @@ body {
   color: var(--error-color);
 }
 
-/* Chat Section */
+/* ==================== CHAT SECTION ==================== */
 .chat-section {
   width: 320px;
   background: var(--sidebar-bg);
@@ -908,6 +905,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
+  overflow: hidden;
 }
 
 .chat-header {
@@ -938,6 +936,7 @@ body {
   overflow-y: auto;
   margin-bottom: 1rem;
   padding-right: 0.5rem;
+  min-height: 0;
 }
 
 .chat-message {
@@ -975,11 +974,13 @@ body {
   line-height: 1.4;
 }
 
+/* ==================== CHAT INPUT & VOICE RECORDER ==================== */
 .chat-input-container {
   display: flex;
   gap: 0.75rem;
   align-items: center;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
+  width: 100%;
 }
 
 .chat-input-container input {
@@ -992,6 +993,7 @@ body {
   font-size: 0.9rem;
   transition: all 0.3s ease;
   min-height: 44px;
+  min-width: 0;
 }
 
 .chat-input-container input:focus {
@@ -1000,32 +1002,32 @@ body {
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
-/* Remove send button styles */
-.send-button {
-  display: none;
-}
-
-/* Enhanced Voice Recorder Container */
+/* Voice Recorder Styles */
 .voice-recorder-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  min-width: auto;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  min-width: fit-content;
+  flex-shrink: 0;
 }
 
 .voice-record-button {
   background: var(--accent-color);
   border: none;
-  border-radius: 10px;
-  padding: 0.75rem;
-  color: white;
-  cursor: pointer;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
+  cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 44px;
-  min-height: 44px;
+  flex-shrink: 0;
 }
 
 .voice-record-button:hover {
@@ -1044,14 +1046,76 @@ body {
   font-weight: 600;
   min-width: 40px;
   text-align: center;
+  font-family: 'Fira Code', monospace;
 }
 
-/* Voice Message Player Fix */
+.voice-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.voice-send-button {
+  background: var(--success-color);
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  color: white;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.voice-send-button:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.voice-cancel-button {
+  background: var(--error-color);
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  color: white;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.voice-cancel-button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Voice Message Styles */
+.voice-message-container {
+  background: var(--bg-accent);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.voice-message-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 .voice-message-player {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.5rem 0;
+  width: 100%;
 }
 
 .play-voice-btn {
@@ -1080,6 +1144,7 @@ body {
   gap: 2px;
   flex: 1;
   height: 30px;
+  padding: 0 0.5rem;
 }
 
 .voice-waveform-bar {
@@ -1095,6 +1160,15 @@ body {
   animation: waveform 1s ease-in-out infinite;
 }
 
+.voice-duration {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 35px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 @keyframes waveform {
   0%, 100% { 
     height: 10px; 
@@ -1106,14 +1180,7 @@ body {
   }
 }
 
-.voice-duration {
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-  font-weight: 600;
-  min-width: 35px;
-  text-align: right;
-}
-/* Room Share Modal */
+/* ==================== MODAL STYLES ==================== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1224,7 +1291,7 @@ body {
   font-weight: 600;
 }
 
-/* Scrollbars */
+/* ==================== SCROLLBARS ==================== */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -1243,7 +1310,7 @@ body {
   background: var(--text-accent);
 }
 
-/* Responsive */
+/* ==================== RESPONSIVE DESIGN ==================== */
 @media (max-width: 1024px) {
   .sidebar, .chat-section {
     width: 280px;
@@ -1272,4 +1339,25 @@ body {
   .room-options-container {
     padding: 2rem;
   }
+  
+  .chat-input-container {
+    flex-wrap: wrap;
+  }
+  
+  .voice-recorder-container {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .chat-input-container input {
+    order: 1;
+    width: 100%;
+  }
+}
+
+/* Remove send button completely */
+.send-button {
+  display: none !important;
 }
