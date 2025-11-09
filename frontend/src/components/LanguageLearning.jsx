@@ -6,6 +6,7 @@ const languageData = {
     name: "JavaScript",
     icon: "🟨",
     color: "#f7df1e",
+    gradient: "linear-gradient(135deg, #f7df1e 0%, #d4b810 100%)",
     tagline: "The Language of the Web",
     description: "JavaScript is a versatile, high-level programming language that powers interactive web experiences. It's essential for modern web development.",
     
@@ -102,10 +103,30 @@ async function fetchData() {
       {
         title: "🔗 Resources",
         resources: [
-          { name: "MDN Web Docs", url: "developer.mozilla.org", type: "Documentation" },
-          { name: "JavaScript.info", url: "javascript.info", type: "Tutorial" },
-          { name: "freeCodeCamp", url: "freecodecamp.org", type: "Interactive" },
-          { name: "Eloquent JavaScript", url: "eloquentjavascript.net", type: "Book" }
+          { 
+            name: "MDN Web Docs", 
+            url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript", 
+            type: "Documentation",
+            description: "Comprehensive JavaScript documentation"
+          },
+          { 
+            name: "JavaScript.info", 
+            url: "https://javascript.info", 
+            type: "Tutorial",
+            description: "Modern JavaScript tutorial"
+          },
+          { 
+            name: "freeCodeCamp", 
+            url: "https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/", 
+            type: "Interactive",
+            description: "Free interactive coding challenges"
+          },
+          { 
+            name: "Eloquent JavaScript", 
+            url: "https://eloquentjavascript.net", 
+            type: "Book",
+            description: "Free online book with exercises"
+          }
         ]
       }
     ]
@@ -115,6 +136,7 @@ async function fetchData() {
     name: "Python",
     icon: "🐍",
     color: "#3776ab",
+    gradient: "linear-gradient(135deg, #3776ab 0%, #2b5c8a 100%)",
     tagline: "Simple, Powerful, Versatile",
     description: "Python is a high-level, interpreted language known for its clean syntax and readability. It's perfect for beginners and experts alike.",
     
@@ -224,10 +246,30 @@ finally:
       {
         title: "🔗 Resources",
         resources: [
-          { name: "Python.org", url: "python.org", type: "Official" },
-          { name: "Real Python", url: "realpython.com", type: "Tutorials" },
-          { name: "Python for Everybody", url: "py4e.com", type: "Course" },
-          { name: "Automate Boring Stuff", url: "automatetheboringstuff.com", type: "Book" }
+          { 
+            name: "Python.org", 
+            url: "https://www.python.org", 
+            type: "Official",
+            description: "Official Python website and documentation"
+          },
+          { 
+            name: "Real Python", 
+            url: "https://realpython.com", 
+            type: "Tutorials",
+            description: "High-quality Python tutorials and articles"
+          },
+          { 
+            name: "Python for Everybody", 
+            url: "https://www.py4e.com", 
+            type: "Course",
+            description: "Free Python course for beginners"
+          },
+          { 
+            name: "Automate Boring Stuff", 
+            url: "https://automatetheboringstuff.com", 
+            type: "Book",
+            description: "Practical Python programming book"
+          }
         ]
       }
     ]
@@ -237,6 +279,7 @@ finally:
     name: "C",
     icon: "⚙️",
     color: "#555555",
+    gradient: "linear-gradient(135deg, #555555 0%, #333333 100%)",
     tagline: "The Foundation of Modern Computing",
     description: "C is a powerful, efficient low-level language that provides direct hardware control. It's the backbone of operating systems and embedded systems.",
     
@@ -351,10 +394,30 @@ struct Person {
       {
         title: "🔗 Resources",
         resources: [
-          { name: "C Programming", url: "learn-c.org", type: "Tutorial" },
-          { name: "The C Programming Language", url: "K&R Book", type: "Book" },
-          { name: "GeeksforGeeks C", url: "geeksforgeeks.org", type: "Reference" },
-          { name: "CS50", url: "cs50.harvard.edu", type: "Course" }
+          { 
+            name: "Learn C", 
+            url: "https://www.learn-c.org", 
+            type: "Tutorial",
+            description: "Interactive C tutorial"
+          },
+          { 
+            name: "GeeksforGeeks C", 
+            url: "https://www.geeksforgeeks.org/c-programming-language/", 
+            type: "Reference",
+            description: "Comprehensive C programming guide"
+          },
+          { 
+            name: "C Programming.com", 
+            url: "https://www.cprogramming.com", 
+            type: "Tutorial",
+            description: "C tutorials and resources"
+          },
+          { 
+            name: "Harvard CS50", 
+            url: "https://cs50.harvard.edu", 
+            type: "Course",
+            description: "Harvard's introduction to computer science"
+          }
         ]
       }
     ]
@@ -364,6 +427,7 @@ struct Person {
     name: "C++",
     icon: "⚡",
     color: "#00599c",
+    gradient: "linear-gradient(135deg, #00599c 0%, #004a7c 100%)",
     tagline: "Power and Performance",
     description: "C++ extends C with object-oriented features while maintaining low-level control. Perfect for performance-critical applications.",
     
@@ -483,10 +547,30 @@ int main() {
       {
         title: "🔗 Resources",
         resources: [
-          { name: "cplusplus.com", url: "cplusplus.com", type: "Reference" },
-          { name: "learncpp.com", url: "learncpp.com", type: "Tutorial" },
-          { name: "C++ Primer", url: "C++ Book", type: "Book" },
-          { name: "CppCon", url: "youtube.com/cppcon", type: "Videos" }
+          { 
+            name: "cplusplus.com", 
+            url: "https://www.cplusplus.com", 
+            type: "Reference",
+            description: "C++ reference and tutorials"
+          },
+          { 
+            name: "learncpp.com", 
+            url: "https://www.learncpp.com", 
+            type: "Tutorial",
+            description: "Free C++ tutorials"
+          },
+          { 
+            name: "C++ Reference", 
+            url: "https://en.cppreference.com/w/", 
+            type: "Reference",
+            description: "Comprehensive C++ reference"
+          },
+          { 
+            name: "CppCon", 
+            url: "https://www.youtube.com/c/CppCon", 
+            type: "Videos",
+            description: "C++ conference talks and videos"
+          }
         ]
       }
     ]
@@ -496,6 +580,7 @@ int main() {
     name: "Java",
     icon: "☕",
     color: "#007396",
+    gradient: "linear-gradient(135deg, #007396 0%, #005a7a 100%)",
     tagline: "Write Once, Run Anywhere",
     description: "Java is a robust, object-oriented language that runs on billions of devices. Known for its portability and enterprise-grade applications.",
     
@@ -618,10 +703,30 @@ public class Main {
       {
         title: "🔗 Resources",
         resources: [
-          { name: "Oracle Java Docs", url: "docs.oracle.com/java", type: "Official" },
-          { name: "Java T Point", url: "javatpoint.com", type: "Tutorial" },
-          { name: "Baeldung", url: "baeldung.com", type: "Advanced" },
-          { name: "Effective Java", url: "Joshua Bloch Book", type: "Book" }
+          { 
+            name: "Oracle Java Docs", 
+            url: "https://docs.oracle.com/javase/", 
+            type: "Official",
+            description: "Official Java documentation"
+          },
+          { 
+            name: "JavaTpoint", 
+            url: "https://www.javatpoint.com/java-tutorial", 
+            type: "Tutorial",
+            description: "Java tutorials for beginners"
+          },
+          { 
+            name: "Baeldung", 
+            url: "https://www.baeldung.com", 
+            type: "Advanced",
+            description: "Advanced Java tutorials and guides"
+          },
+          { 
+            name: "GeeksforGeeks Java", 
+            url: "https://www.geeksforgeeks.org/java/", 
+            type: "Reference",
+            description: "Java programming articles and examples"
+          }
         ]
       }
     ]
@@ -631,6 +736,7 @@ public class Main {
     name: "TypeScript",
     icon: "🔷",
     color: "#3178c6",
+    gradient: "linear-gradient(135deg, #3178c6 0%, #2b6cb0 100%)",
     tagline: "JavaScript with Superpowers",
     description: "TypeScript adds static typing to JavaScript, making code more maintainable and catching errors early.",
     
@@ -747,10 +853,30 @@ function isString(value: any): value is string {
       {
         title: "🔗 Resources",
         resources: [
-          { name: "TypeScript Docs", url: "typescriptlang.org", type: "Official" },
-          { name: "TypeScript Deep Dive", url: "basarat.gitbook.io", type: "Book" },
-          { name: "Execute Program", url: "executeprogram.com", type: "Interactive" },
-          { name: "Total TypeScript", url: "totaltypescript.com", type: "Course" }
+          { 
+            name: "TypeScript Docs", 
+            url: "https://www.typescriptlang.org", 
+            type: "Official",
+            description: "Official TypeScript documentation"
+          },
+          { 
+            name: "TypeScript Deep Dive", 
+            url: "https://basarat.gitbook.io/typescript/", 
+            type: "Book",
+            description: "Free TypeScript book"
+          },
+          { 
+            name: "Total TypeScript", 
+            url: "https://totaltypescript.com", 
+            type: "Course",
+            description: "Comprehensive TypeScript course"
+          },
+          { 
+            name: "TypeScript Exercises", 
+            url: "https://typescript-exercises.github.io/", 
+            type: "Interactive",
+            description: "Interactive TypeScript exercises"
+          }
         ]
       }
     ]
@@ -760,6 +886,7 @@ function isString(value: any): value is string {
     name: "PHP",
     icon: "🐘",
     color: "#777bb4",
+    gradient: "linear-gradient(135deg, #777bb4 0%, #6a6da0 100%)",
     tagline: "The Server-Side Powerhouse",
     description: "PHP powers over 75% of the web, including WordPress and Facebook. It's perfect for dynamic websites and server-side applications.",
     
@@ -874,10 +1001,30 @@ $users = $stmt->fetchAll();
       {
         title: "🔗 Resources",
         resources: [
-          { name: "PHP.net", url: "php.net", type: "Official" },
-          { name: "PHP The Right Way", url: "phptherightway.com", type: "Guide" },
-          { name: "Laracasts", url: "laracasts.com", type: "Videos" },
-          { name: "W3Schools PHP", url: "w3schools.com/php", type: "Tutorial" }
+          { 
+            name: "PHP.net", 
+            url: "https://www.php.net", 
+            type: "Official",
+            description: "Official PHP documentation"
+          },
+          { 
+            name: "PHP The Right Way", 
+            url: "https://phptherightway.com", 
+            type: "Guide",
+            description: "PHP best practices guide"
+          },
+          { 
+            name: "Laracasts", 
+            url: "https://laracasts.com", 
+            type: "Videos",
+            description: "PHP and Laravel video tutorials"
+          },
+          { 
+            name: "W3Schools PHP", 
+            url: "https://www.w3schools.com/php/", 
+            type: "Tutorial",
+            description: "PHP tutorials and reference"
+          }
         ]
       }
     ]
@@ -887,6 +1034,7 @@ $users = $stmt->fetchAll();
     name: "Go",
     icon: "🐹",
     color: "#00add8",
+    gradient: "linear-gradient(135deg, #00add8 0%, #0099c3 100%)",
     tagline: "Simple, Fast, Reliable",
     description: "Go (Golang) is Google's language for building fast, concurrent systems. Perfect for cloud services and distributed systems.",
     
@@ -1020,10 +1168,30 @@ func main() {
       {
         title: "🔗 Resources",
         resources: [
-          { name: "Go.dev", url: "go.dev", type: "Official" },
-          { name: "A Tour of Go", url: "go.dev/tour", type: "Interactive" },
-          { name: "Go by Example", url: "gobyexample.com", type: "Examples" },
-          { name: "Effective Go", url: "go.dev/doc/effective_go", type: "Guide" }
+          { 
+            name: "Go.dev", 
+            url: "https://go.dev", 
+            type: "Official",
+            description: "Official Go programming language website"
+          },
+          { 
+            name: "A Tour of Go", 
+            url: "https://go.dev/tour", 
+            type: "Interactive",
+            description: "Interactive Go tutorial"
+          },
+          { 
+            name: "Go by Example", 
+            url: "https://gobyexample.com", 
+            type: "Examples",
+            description: "Go programming examples"
+          },
+          { 
+            name: "Effective Go", 
+            url: "https://go.dev/doc/effective_go", 
+            type: "Guide",
+            description: "Go best practices guide"
+          }
         ]
       }
     ]
@@ -1033,6 +1201,7 @@ func main() {
     name: "Rust",
     icon: "🦀",
     color: "#ce422b",
+    gradient: "linear-gradient(135deg, #ce422b 0%, #b53824 100%)",
     tagline: "Safe, Fast, Concurrent",
     description: "Rust provides memory safety without garbage collection. Perfect for systems programming where performance and reliability are critical.",
     
@@ -1154,10 +1323,30 @@ fn main() {
       {
         title: "🔗 Resources",
         resources: [
-          { name: "The Rust Book", url: "doc.rust-lang.org/book", type: "Official" },
-          { name: "Rust by Example", url: "doc.rust-lang.org/rust-by-example", type: "Examples" },
-          { name: "Rustlings", url: "rustlings.dev", type: "Interactive" },
-          { name: "Exercism Rust", url: "exercism.org/tracks/rust", type: "Exercises" }
+          { 
+            name: "The Rust Book", 
+            url: "https://doc.rust-lang.org/book/", 
+            type: "Official",
+            description: "Official Rust programming book"
+          },
+          { 
+            name: "Rust by Example", 
+            url: "https://doc.rust-lang.org/rust-by-example/", 
+            type: "Examples",
+            description: "Learn Rust with examples"
+          },
+          { 
+            name: "Rustlings", 
+            url: "https://github.com/rust-lang/rustlings", 
+            type: "Interactive",
+            description: "Small Rust exercises"
+          },
+          { 
+            name: "Exercism Rust", 
+            url: "https://exercism.org/tracks/rust", 
+            type: "Exercises",
+            description: "Rust coding exercises and mentorship"
+          }
         ]
       }
     ]
@@ -1167,6 +1356,7 @@ fn main() {
     name: "Ruby",
     icon: "💎",
     color: "#cc342d",
+    gradient: "linear-gradient(135deg, #cc342d 0%, #b32b25 100%)",
     tagline: "Programmer Happiness",
     description: "Ruby is designed for programmer happiness with elegant syntax. Powers Ruby on Rails, one of the most productive web frameworks.",
     
@@ -1291,10 +1481,30 @@ end`
       {
         title: "🔗 Resources",
         resources: [
-          { name: "Ruby-lang.org", url: "ruby-lang.org", type: "Official" },
-          { name: "Try Ruby", url: "tryruby.org", type: "Interactive" },
-          { name: "Ruby Koans", url: "rubykoans.com", type: "Learning" },
-          { name: "Rails Guides", url: "guides.rubyonrails.org", type: "Framework" }
+          { 
+            name: "Ruby-lang.org", 
+            url: "https://www.ruby-lang.org", 
+            type: "Official",
+            description: "Official Ruby programming language website"
+          },
+          { 
+            name: "Try Ruby", 
+            url: "https://try.ruby-lang.org", 
+            type: "Interactive",
+            description: "Interactive Ruby tutorial"
+          },
+          { 
+            name: "Ruby Koans", 
+            url: "http://rubykoans.com", 
+            type: "Learning",
+            description: "Learn Ruby through testing"
+          },
+          { 
+            name: "Rails Guides", 
+            url: "https://guides.rubyonrails.org", 
+            type: "Framework",
+            description: "Official Ruby on Rails guides"
+          }
         ]
       }
     ]
@@ -1308,15 +1518,26 @@ const LanguageLearning = ({ isOpen, onClose, language }) => {
 
   const data = languageData[language] || languageData.javascript;
 
+  // Handle resource link click
+  const handleResourceClick = (url) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  // Handle code copy
+  const handleCopyCode = (code) => {
+    navigator.clipboard.writeText(code);
+    // You could add a toast notification here
+  };
+
   return (
     <div className="learning-overlay" onClick={onClose}>
       <div className="learning-panel" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="learning-header" style={{ borderColor: data.color }}>
+        <div className="learning-header" style={{ borderColor: data.color, background: data.gradient }}>
           <div className="learning-header-content">
             <div className="learning-icon">{data.icon}</div>
             <div className="learning-title-section">
-              <h1 className="learning-title" style={{ color: data.color }}>
+              <h1 className="learning-title" style={{ color: '#ffffff' }}>
                 Learn {data.name}
               </h1>
               <p className="learning-tagline">{data.tagline}</p>
@@ -1340,7 +1561,8 @@ const LanguageLearning = ({ isOpen, onClose, language }) => {
               onClick={() => setActiveSection(index)}
               style={{
                 borderColor: activeSection === index ? data.color : 'transparent',
-                background: activeSection === index ? `${data.color}15` : 'transparent'
+                background: activeSection === index ? `${data.color}15` : 'transparent',
+                color: activeSection === index ? data.color : 'inherit'
               }}
             >
               {section.title}
@@ -1379,7 +1601,7 @@ const LanguageLearning = ({ isOpen, onClose, language }) => {
               {section.items && (
                 <div className="features-grid">
                   {section.items.map((item, i) => (
-                    <div key={i} className="feature-card">
+                    <div key={i} className="feature-card" style={{ borderLeftColor: data.color }}>
                       <div className="feature-icon">{item.icon}</div>
                       <div className="feature-content">
                         <h4>{item.text}</h4>
@@ -1394,11 +1616,15 @@ const LanguageLearning = ({ isOpen, onClose, language }) => {
                 <div className="code-block">
                   <div className="code-header" style={{ background: data.color }}>
                     <span>Example Code</span>
-                    <button className="code-copy">
+                    <button 
+                      className="code-copy"
+                      onClick={() => handleCopyCode(section.code)}
+                    >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                       </svg>
+                      Copy
                     </button>
                   </div>
                   <pre className="code-content">{section.code}</pre>
@@ -1428,12 +1654,23 @@ const LanguageLearning = ({ isOpen, onClose, language }) => {
               {section.resources && (
                 <div className="resources-grid">
                   {section.resources.map((resource, i) => (
-                    <div key={i} className="resource-card" style={{ borderColor: `${data.color}40` }}>
+                    <div 
+                      key={i} 
+                      className="resource-card" 
+                      style={{ borderColor: `${data.color}40` }}
+                      onClick={() => handleResourceClick(resource.url)}
+                    >
                       <div className="resource-type" style={{ background: `${data.color}20`, color: data.color }}>
                         {resource.type}
                       </div>
                       <h4>{resource.name}</h4>
-                      <p className="resource-url">{resource.url}</p>
+                      <p className="resource-description">{resource.description}</p>
+                      <p className="resource-url">{resource.url.replace('https://', '')}</p>
+                      <div className="resource-arrow">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                        </svg>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1446,7 +1683,7 @@ const LanguageLearning = ({ isOpen, onClose, language }) => {
         <div className="learning-footer">
           <button 
             className="start-coding-btn"
-            style={{ background: data.color }}
+            style={{ background: data.gradient }}
             onClick={onClose}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
