@@ -977,29 +977,46 @@ body {
 
 .chat-input-container {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   align-items: center;
+  padding: 0.5rem 0;
 }
 
 .chat-input-container input {
   flex: 1;
-  padding: 0.75rem;
+  padding: 0.75rem 1rem;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--text-primary);
   font-size: 0.9rem;
+  transition: all 0.3s ease;
+  min-height: 44px;
 }
 
 .chat-input-container input:focus {
   outline: none;
   border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
+/* Remove send button styles */
 .send-button {
+  display: none;
+}
+
+/* Enhanced Voice Recorder Container */
+.voice-recorder-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: auto;
+}
+
+.voice-record-button {
   background: var(--accent-color);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0.75rem;
   color: white;
   cursor: pointer;
@@ -1007,56 +1024,54 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
 }
 
-.send-button:hover {
+.voice-record-button:hover {
   background: var(--info-color);
   transform: scale(1.05);
 }
 
-/* Voice Message */
-/* Voice Message */
-.voice-message-container {
-  background: var(--bg-accent);
-  border-radius: 12px;
-  padding: 1rem;
-  margin-top: 0.5rem;
-  position: relative;
+.voice-record-button.recording {
+  background: var(--error-color);
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
-.voice-message-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  color: var(--text-primary);
+.voice-timer {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
   font-weight: 600;
-  font-size: 0.9rem;
+  min-width: 40px;
+  text-align: center;
 }
 
+/* Voice Message Player Fix */
 .voice-message-player {
   display: flex;
   align-items: center;
   gap: 1rem;
+  padding: 0.5rem 0;
 }
 
 .play-voice-btn {
   background: var(--accent-color);
   border: none;
   border-radius: 50%;
-  width: 60px; /* Increased from 40px */
-  height: 60px; /* Increased from 40px */
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1.5rem; /* Larger icon */
+  flex-shrink: 0;
 }
 
 .play-voice-btn:hover {
   transform: scale(1.1);
+  background: var(--info-color);
 }
 
 .voice-waveform {
@@ -1064,6 +1079,7 @@ body {
   align-items: center;
   gap: 2px;
   flex: 1;
+  height: 30px;
 }
 
 .voice-waveform-bar {
@@ -1079,38 +1095,23 @@ body {
   animation: waveform 1s ease-in-out infinite;
 }
 
+@keyframes waveform {
+  0%, 100% { 
+    height: 10px; 
+    opacity: 0.7;
+  }
+  50% { 
+    height: 20px; 
+    opacity: 1;
+  }
+}
+
 .voice-duration {
   color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-/* Send button inside voice message container */
-.voice-send-button {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--success-color);
-  border: none;
-  border-radius: 8px;
-  padding: 0.5rem;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  width: 36px;
-  height: 36px;
-}
-
-.voice-send-button:hover {
-  background: var(--info-color);
-  transform: scale(1.05);
-}
-
-@keyframes waveform {
-  0%, 100% { height: 10px; }
-  50% { height: 20px; }
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 35px;
+  text-align: right;
 }
 /* Room Share Modal */
 .modal-overlay {
