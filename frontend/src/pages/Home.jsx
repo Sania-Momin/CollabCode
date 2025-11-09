@@ -10,49 +10,49 @@ export default function Home() {
       id: 1,
       title: "Real-Time Collaborative Coding",
       icon: "👨‍💻👩‍💻",
-      hoverDescription: "Code together simultaneously with live cursor tracking, syntax highlighting, and real-time updates."
+      description: "Code together simultaneously with live cursor tracking, syntax highlighting, and real-time updates."
     },
     {
       id: 2,
       title: "Integrated Chat Section",
       icon: "💬",
-      hoverDescription: "Chat while you code. Discuss ideas, share snippets, and solve problems together without switching tabs."
+      description: "Chat while you code. Discuss ideas, share snippets, and solve problems together without switching tabs."
     },
     {
       id: 3,
       title: "Live Output Display",
       icon: "🖥️",
-      hoverDescription: "See results instantly. Run code and watch the output update live as you and your team make changes."
+      description: "See results instantly. Run code and watch the output update live as you and your team make changes."
     },
     {
       id: 4,
       title: "Personal AI Assistant",
       icon: "🤖",
-      hoverDescription: "Smart coding companion. Get instant help, fix errors, and learn better ways to write code together."
+      description: "Smart coding companion. Get instant help, fix errors, and learn better ways to write code together."
     },
     {
       id: 5,
       title: "Voice Messaging",
       icon: "🎙️",
-      hoverDescription: "Communicate naturally with voice messages. Record and share audio notes for clearer explanations."
+      description: "Communicate naturally with voice messages. Record and share audio notes for clearer explanations."
     },
     {
       id: 6,
       title: "File Manager",
       icon: "📁",
-      hoverDescription: "Organize your projects effortlessly. Upload, manage, and share files with your team in a structured workspace."
+      description: "Organize your projects effortlessly. Upload, manage, and share files with your team in a structured workspace."
     },
     {
       id: 7,
       title: "Customizable Themes",
       icon: "🎨",
-      hoverDescription: "Personalize your coding environment with multiple theme options for better comfort and productivity."
+      description: "Personalize your coding environment with multiple theme options for better comfort and productivity."
     },
     {
       id: 8,
       title: "Learn Languages While Coding",
       icon: "📚",
-      hoverDescription: "Built-in learning resources for each programming language. Get tips, syntax help, and best practices."
+      description: "Built-in learning resources for each programming language. Get tips, syntax help, and best practices."
     }
   ];
 
@@ -97,11 +97,8 @@ export default function Home() {
               <h3 className="feature-title">{feature.title}</h3>
               <div className="feature-content">
                 <p className="feature-description">
-                  {activeFeature === feature.id ? feature.hoverDescription : ""}
+                  {feature.description}
                 </p>
-              </div>
-              <div className="feature-hover-indicator">
-                {activeFeature === feature.id ? "↑" : "↓"} Hover for details
               </div>
             </div>
           ))}
