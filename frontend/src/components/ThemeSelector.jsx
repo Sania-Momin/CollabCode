@@ -144,11 +144,14 @@ const themes = [
   }
 ];
 
-const ThemeSelector = ({ isOpen, onClose, currentTheme, onThemeChange }) => {
-  if (!isOpen) return null;
-
-  const handleThemeSelect = (themeId) => {
-    onThemeChange(themeId);
+const handleThemeSelect = (themeId) => {
+  onThemeChange(themeId);
+  
+  // Apply theme to entire document
+  document.documentElement.setAttribute('data-theme', themeId);
+  
+  // Store theme preference
+  localStorage.setItem("editorTheme", themeId);
     
     // For custom themes, we need to define them in Monaco
     const customThemes = {
