@@ -9,27 +9,30 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-  e.preventDefault();
-  try {
-    console.log("Attempting login with:", { email: email.trim(), password: "***" });
-    
-    const res = await axios.post("http://localhost:5000/api/auth/login", {
-      email: email.trim(),
-      password: password.trim(),
-    });
+    e.preventDefault();
+    try {
+      console.log("Attempting login with:", { email: email.trim(), password: "***" });
+      
+      // ✅ FIXED: Use environment variable for backend URL
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+      console.log("Backend URL:", backendUrl);
+      
+      const res = await axios.post(`${backendUrl}/api/auth/login`, {
+        email: email.trim(),
+        password: password.trim(),
+      });
 
-    // store token & user info
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
+      // store token & user info
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-    alert("Login successful!");
-    navigate("/editor"); // redirect to editor
-  } catch (err) {
-    console.log("Login error details:", err.response?.data);
-    alert(err.response?.data?.message || "Login failed");
-  }
-};
-
+      alert("Login successful!");
+      navigate("/editor"); // redirect to editor
+    } catch (err) {
+      console.log("Login error details:", err.response?.data);
+      alert(err.response?.data?.message || "Login failed");
+    }
+  };
 
   return (
     <div className="login-container">
@@ -41,6 +44,7 @@ export default function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
         <input
           type="password"
@@ -48,13 +52,13 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
         <button type="submit">Login</button>
 
         <div className="links">
-          
           <p>
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <Link to="/signup" className="signup-link">Sign up</Link>
           </p>
         </div>
