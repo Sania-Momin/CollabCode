@@ -13,7 +13,10 @@ export default function Signup() {
     setLoading(true);
     
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/signup", {
+      // ✅ FIXED: Use environment variable for backend URL
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+      
+      const res = await axios.post(`${backendUrl}/api/auth/signup`, {
         name: form.name.trim(),
         email: form.email.trim(),
         password: form.password.trim(),
@@ -32,8 +35,7 @@ export default function Signup() {
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.type === "text" ? "name" : 
-       e.target.type === "email" ? "email" : "password"]: e.target.value
+      [e.target.name]: e.target.value
     });
   };
 
@@ -44,30 +46,33 @@ export default function Signup() {
         
         <input
           type="text"
+          name="name"
           placeholder="Name"
           value={form.name}
           onChange={handleChange}
           required
-          className="w-full mb-4 p-3 rounded bg-gray-700 focus:outline-none"
+          autoComplete="name"
         />
         
         <input
           type="email"
+          name="email"
           placeholder="Email"
           value={form.email}
           onChange={handleChange}
           required
-          className="w-full mb-4 p-3 rounded bg-gray-700 focus:outline-none"
+          autoComplete="email"
         />
         
         <input
           type="password"
+          name="password"
           placeholder="Password"
           value={form.password}
           onChange={handleChange}
           required
           minLength={6}
-          className="w-full mb-4 p-3 rounded bg-gray-700 focus:outline-none"
+          autoComplete="new-password"
         />
         
         <button 
