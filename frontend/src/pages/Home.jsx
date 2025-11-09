@@ -10,7 +10,7 @@ export default function Home() {
       id: 1,
       title: "Real-Time Collaborative Coding",
       icon: "👨‍💻👩‍💻",
-      hoverDescription: "Code together simultaneously with live cursor tracking, syntax highlighting."
+      hoverDescription: "Code together simultaneously with live cursor tracking, syntax highlighting, and real-time updates."
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ export default function Home() {
       id: 5,
       title: "Voice Messaging",
       icon: "🎙️",
-      hoverDescription: "Communicate naturally with voice messages. Record and share audio notes for clearer explanations and faster collaboration."
+      hoverDescription: "Communicate naturally with voice messages. Record and share audio notes for clearer explanations."
     },
     {
       id: 6,
@@ -43,12 +43,17 @@ export default function Home() {
       hoverDescription: "Organize your projects effortlessly. Upload, manage, and share files with your team in a structured workspace."
     },
     {
-  id: 7,
-  title: "Video Call",
-  icon: "🎥",
-  hoverDescription: "Connect face-to-face with your team instantly. Start or join secure video calls with real-time audio and video communication."
-}
-
+      id: 7,
+      title: "Customizable Themes",
+      icon: "🎨",
+      hoverDescription: "Personalize your coding environment with multiple theme options for better comfort and productivity."
+    },
+    {
+      id: 8,
+      title: "Learn Languages While Coding",
+      icon: "📚",
+      hoverDescription: "Built-in learning resources for each programming language. Get tips, syntax help, and best practices."
+    }
   ];
 
   return (
