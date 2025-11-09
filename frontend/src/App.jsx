@@ -9,8 +9,8 @@ import Signup from "./pages/Signup";
 import AIChatbot from "./components/AIChatbot";
 import FileManager from "./components/FileManager";
 import VoiceRecorder from "./components/VoiceRecorder";
-import VideoCall from "./components/VideoCall";
-import VideoCallNotification from "./components/VideoCallNotification";
+import ThemeSelector from "./components/ThemeSelector";
+import LanguageLearning from "./components/LanguageLearning";
 
 const socket = io(import.meta.env.VITE_BACKEND_URL);
 
@@ -93,9 +93,10 @@ const EditorRoom = () => {
   const [isFileManagerOpen, setIsFileManagerOpen] = useState(false);
   const [currentFile, setCurrentFile] = useState(null);
   
-  // Video call states
-  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false);
-  const [showVideoNotification, setShowVideoNotification] = useState(false);
+  // New state for theme and learning panel
+  const [currentTheme, setCurrentTheme] = useState('vs-dark');
+  const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
+  const [isLearningPanelOpen, setIsLearningPanelOpen] = useState(false);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -103,6 +104,12 @@ const EditorRoom = () => {
       setUserName(storedUser.name);
     } else {
       navigate("/login");
+    }
+    
+    // Load saved theme
+    const savedTheme = localStorage.getItem("editorTheme");
+    if (savedTheme) {
+      setCurrentTheme(savedTheme);
     }
   }, [navigate]);
 
@@ -138,11 +145,6 @@ const EditorRoom = () => {
       }
     });
 
-    // Video call notification
-    socket.on("incomingVideoCall", () => {
-      setShowVideoNotification(true);
-    });
-
     return () => {
       socket.off("chatMessage");
       socket.off("voiceMessage");
@@ -153,7 +155,6 @@ const EditorRoom = () => {
       socket.off("codeResponse");
       socket.off("fileContentUpdated");
       socket.off("fileSelected");
-      socket.off("incomingVideoCall");
     };
   }, [currentFile, language]);
 
@@ -187,7 +188,6 @@ const EditorRoom = () => {
     setLanguage("javascript");
     setShowRoomOptions(true);
     setCurrentFile(null);
-    setIsVideoCallOpen(false);
   };
 
   const copyRoomId = () => {
@@ -318,18 +318,9 @@ const EditorRoom = () => {
     }
   };
 
-  const startVideoCall = () => {
-    socket.emit("startVideoCall", { roomId, userName });
-    setIsVideoCallOpen(true);
-  };
-
-  const handleAcceptCall = () => {
-    setShowVideoNotification(false);
-    setIsVideoCallOpen(true);
-  };
-
-  const handleDeclineCall = () => {
-    setShowVideoNotification(false);
+  const handleThemeChange = (theme) => {
+    setCurrentTheme(theme);
+    localStorage.setItem("editorTheme", theme);
   };
 
   if (!joined) {
@@ -447,13 +438,36 @@ const EditorRoom = () => {
             <option value="go">Go</option>
             <option value="rust">Rust</option>
           </select>
-          
-          <button className="video-call-button" onClick={startVideoCall}>
+
+          {/* Learn Language Button */}
+          <button 
+            className="learn-language-button" 
+            onClick={() => setIsLearningPanelOpen(true)}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M23 7l-7 5 7 5V7z"/>
-              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
             </svg>
-            Start Video Call
+            Learn {language.charAt(0).toUpperCase() + language.slice(1)}
+          </button>
+
+          {/* Theme Selector Button */}
+          <button 
+            className="theme-selector-button" 
+            onClick={() => setIsThemeSelectorOpen(true)}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            Themes
           </button>
 
           <button className="file-manager-button" onClick={() => setIsFileManagerOpen(true)}>
@@ -490,7 +504,7 @@ const EditorRoom = () => {
             language={language}
             value={code}
             onChange={handleCodeChange}
-            theme="vs-dark"
+            theme={currentTheme}
             options={{ minimap: { enabled: false }, fontSize: 14 }}
           />
 
@@ -570,22 +584,18 @@ const EditorRoom = () => {
         code={code}
       />
 
-      <VideoCall
-        socket={socket}
-        roomId={roomId}
-        userName={userName}
-        isOpen={isVideoCallOpen}
-        onClose={() => setIsVideoCallOpen(false)}
+      <ThemeSelector
+        isOpen={isThemeSelectorOpen}
+        onClose={() => setIsThemeSelectorOpen(false)}
+        currentTheme={currentTheme}
+        onThemeChange={handleThemeChange}
       />
 
-      {showVideoNotification && (
-        <VideoCallNotification
-          socket={socket}
-          roomId={roomId}
-          onAccept={handleAcceptCall}
-          onDecline={handleDeclineCall}
-        />
-      )}
+      <LanguageLearning
+        isOpen={isLearningPanelOpen}
+        onClose={() => setIsLearningPanelOpen(false)}
+        language={language}
+      />
     </>
   );
 };

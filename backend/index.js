@@ -36,6 +36,10 @@ app.use(
 
 app.use(express.json({ limit: "10mb" }));
 
+app.get('/', (req, res) => {
+  res.send('✅ CollabCode Backend is running!');
+});
+
 // ✅ MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI, {
