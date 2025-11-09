@@ -36,17 +36,6 @@ const themes = [
     }
   },
   {
-    id: 'vs',
-    name: 'Visual Studio',
-    description: 'Classic VS light',
-    preview: {
-      bg: '#f3f3f3',
-      editor: '#ffffff',
-      accent: '#0066cc',
-      text: '#000000'
-    }
-  },
-  {
     id: 'monokai',
     name: 'Monokai',
     description: 'Popular dark theme',
@@ -55,8 +44,7 @@ const themes = [
       editor: '#272822',
       accent: '#a6e22e',
       text: '#f8f8f2'
-    },
-    custom: true
+    }
   },
   {
     id: 'dracula',
@@ -67,8 +55,7 @@ const themes = [
       editor: '#282a36',
       accent: '#bd93f9',
       text: '#f8f8f2'
-    },
-    custom: true
+    }
   },
   {
     id: 'nord',
@@ -79,8 +66,7 @@ const themes = [
       editor: '#2e3440',
       accent: '#88c0d0',
       text: '#d8dee9'
-    },
-    custom: true
+    }
   },
   {
     id: 'solarized-dark',
@@ -91,8 +77,7 @@ const themes = [
       editor: '#002b36',
       accent: '#268bd2',
       text: '#839496'
-    },
-    custom: true
+    }
   },
   {
     id: 'github-dark',
@@ -103,8 +88,7 @@ const themes = [
       editor: '#0d1117',
       accent: '#58a6ff',
       text: '#c9d1d9'
-    },
-    custom: true
+    }
   },
   {
     id: 'tokyo-night',
@@ -115,8 +99,7 @@ const themes = [
       editor: '#1a1b26',
       accent: '#7aa2f7',
       text: '#a9b1d6'
-    },
-    custom: true
+    }
   },
   {
     id: 'gruvbox',
@@ -127,8 +110,7 @@ const themes = [
       editor: '#282828',
       accent: '#fe8019',
       text: '#ebdbb2'
-    },
-    custom: true
+    }
   },
   {
     id: 'one-dark',
@@ -139,8 +121,7 @@ const themes = [
       editor: '#282c34',
       accent: '#61afef',
       text: '#abb2bf'
-    },
-    custom: true
+    }
   }
 ];
 
@@ -155,7 +136,7 @@ const ThemeSelector = ({ isOpen, onClose, currentTheme, onThemeChange }) => {
     // Store theme preference
     localStorage.setItem("editorTheme", themeId);
     
-    // For custom themes, we need to define them in Monaco
+    // Define custom themes for Monaco editor
     const customThemes = {
       'monokai': {
         base: 'vs-dark',
