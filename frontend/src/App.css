@@ -83,6 +83,9 @@ body {
   --card-hover: rgba(255, 255, 0, 0.3);
 }
 
+
+/* ==================== ADDITIONAL THEME DEFINITIONS ==================== */
+
 /* Monokai Theme */
 [data-theme="monokai"] {
   --bg-primary: #272822;
@@ -125,6 +128,138 @@ body {
   --sidebar-border: #6272a4;
   --card-bg: #44475a;
   --card-hover: rgba(189, 147, 249, 0.2);
+}
+
+/* Nord Theme */
+[data-theme="nord"] {
+  --bg-primary: #2e3440;
+  --bg-secondary: #3b4252;
+  --bg-tertiary: #434c5e;
+  --bg-accent: rgba(136, 192, 208, 0.1);
+  --text-primary: #d8dee9;
+  --text-secondary: #81a1c1;
+  --text-accent: #88c0d0;
+  --border-color: #4c566a;
+  --accent-color: #88c0d0;
+  --success-color: #a3be8c;
+  --error-color: #bf616a;
+  --warning-color: #ebcb8b;
+  --info-color: #5e81ac;
+  
+  --sidebar-bg: linear-gradient(180deg, #3b4252 0%, #2e3440 100%);
+  --sidebar-border: #4c566a;
+  --card-bg: #434c5e;
+  --card-hover: rgba(136, 192, 208, 0.2);
+}
+
+/* Solarized Dark Theme */
+[data-theme="solarized-dark"] {
+  --bg-primary: #002b36;
+  --bg-secondary: #073642;
+  --bg-tertiary: #0a4b5a;
+  --bg-accent: rgba(38, 139, 210, 0.1);
+  --text-primary: #839496;
+  --text-secondary: #586e75;
+  --text-accent: #268bd2;
+  --border-color: #073642;
+  --accent-color: #268bd2;
+  --success-color: #859900;
+  --error-color: #dc322f;
+  --warning-color: #b58900;
+  --info-color: #2aa198;
+  
+  --sidebar-bg: linear-gradient(180deg, #073642 0%, #002b36 100%);
+  --sidebar-border: #0a4b5a;
+  --card-bg: #073642;
+  --card-hover: rgba(38, 139, 210, 0.2);
+}
+
+/* GitHub Dark Theme */
+[data-theme="github-dark"] {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --bg-accent: rgba(88, 166, 255, 0.1);
+  --text-primary: #c9d1d9;
+  --text-secondary: #8b949e;
+  --text-accent: #58a6ff;
+  --border-color: #30363d;
+  --accent-color: #58a6ff;
+  --success-color: #3fb950;
+  --error-color: #f85149;
+  --warning-color: #d29922;
+  --info-color: #a371f7;
+  
+  --sidebar-bg: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+  --sidebar-border: #30363d;
+  --card-bg: #161b22;
+  --card-hover: rgba(88, 166, 255, 0.2);
+}
+
+/* Tokyo Night Theme */
+[data-theme="tokyo-night"] {
+  --bg-primary: #1a1b26;
+  --bg-secondary: #24283b;
+  --bg-tertiary: #2f334d;
+  --bg-accent: rgba(122, 162, 247, 0.1);
+  --text-primary: #a9b1d6;
+  --text-secondary: #565f89;
+  --text-accent: #7aa2f7;
+  --border-color: #414868;
+  --accent-color: #7aa2f7;
+  --success-color: #9ece6a;
+  --error-color: #f7768e;
+  --warning-color: #e0af68;
+  --info-color: #bb9af7;
+  
+  --sidebar-bg: linear-gradient(180deg, #24283b 0%, #1a1b26 100%);
+  --sidebar-border: #414868;
+  --card-bg: #24283b;
+  --card-hover: rgba(122, 162, 247, 0.2);
+}
+
+/* Gruvbox Dark Theme */
+[data-theme="gruvbox"] {
+  --bg-primary: #282828;
+  --bg-secondary: #3c3836;
+  --bg-tertiary: #504945;
+  --bg-accent: rgba(254, 128, 25, 0.1);
+  --text-primary: #ebdbb2;
+  --text-secondary: #a89984;
+  --text-accent: #fe8019;
+  --border-color: #665c54;
+  --accent-color: #fe8019;
+  --success-color: #98971a;
+  --error-color: #cc241d;
+  --warning-color: #d79921;
+  --info-color: #458588;
+  
+  --sidebar-bg: linear-gradient(180deg, #3c3836 0%, #282828 100%);
+  --sidebar-border: #665c54;
+  --card-bg: #3c3836;
+  --card-hover: rgba(254, 128, 25, 0.2);
+}
+
+/* One Dark Pro Theme */
+[data-theme="one-dark"] {
+  --bg-primary: #282c34;
+  --bg-secondary: #2c323c;
+  --bg-tertiary: #353b45;
+  --bg-accent: rgba(97, 175, 239, 0.1);
+  --text-primary: #abb2bf;
+  --text-secondary: #5c6370;
+  --text-accent: #61afef;
+  --border-color: #3e4451;
+  --accent-color: #61afef;
+  --success-color: #98c379;
+  --error-color: #e06c75;
+  --warning-color: #e5c07b;
+  --info-color: #56b6c2;
+  
+  --sidebar-bg: linear-gradient(180deg, #2c323c 0%, #282c34 100%);
+  --sidebar-border: #3e4451;
+  --card-bg: #2c323c;
+  --card-hover: rgba(97, 175, 239, 0.2);
 }
 
 /* ==================== ROOM SELECTION PAGE ==================== */
