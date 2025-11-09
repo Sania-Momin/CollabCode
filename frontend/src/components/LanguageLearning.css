@@ -219,7 +219,7 @@
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  gap: 24px;
   margin: 24px 0;
 }
 
@@ -228,8 +228,9 @@
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 4px solid;
+  border-left: 4px solid #6e8efb;
   display: flex;
+  flex-direction: column;
   gap: 16px;
   transition: all 0.3s;
 }
@@ -240,24 +241,85 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+.feature-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
 .feature-icon {
   font-size: 32px;
   line-height: 1;
   flex-shrink: 0;
 }
 
-.feature-content h4 {
-  margin: 0 0 8px;
-  font-size: 16px;
+.feature-title {
+  margin: 0;
+  font-size: 18px;
   font-weight: 600;
   color: #ffffff;
 }
 
-.feature-content p {
+.feature-description {
   margin: 0;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+.use-cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin: 24px 0;
+}
+
+.use-case-card {
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #a777e3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s;
+}
+
+.use-case-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.use-case-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.use-case-icon {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.use-case-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.use-case-description {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+/* Remove old feature card styles */
+.feature-content {
+  display: none;
 }
 
 .code-block {
@@ -573,7 +635,8 @@
   .learning-content { padding: 24px; }
   .features-grid,
   .highlights-grid,
-  .resources-grid {
+  .resources-grid,
+  .use-cases-grid {
     grid-template-columns: 1fr;
   }
   .learning-nav {
@@ -582,5 +645,18 @@
   .learning-nav-item {
     padding: 12px 16px;
     font-size: 12px;
+  }
+  
+  /* Add mobile-specific styles for feature and use case cards */
+  .feature-header,
+  .use-case-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .feature-card,
+  .use-case-card {
+    padding: 20px;
   }
 }
