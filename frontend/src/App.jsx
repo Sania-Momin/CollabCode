@@ -71,6 +71,53 @@ const VoiceMessage = ({ message }) => {
   );
 };
 
+// Room Share Modal Component
+const RoomShareModal = ({ roomId, isOpen, onClose }) => {
+  const [copySuccess, setCopySuccess] = useState('');
+  
+  const copyInviteLink = () => {
+    const inviteText = `Join my coding session on CollabCode!\n\nRoom ID: ${roomId}\nWebsite: ${window.location.origin}`;
+    navigator.clipboard.writeText(inviteText);
+    setCopySuccess('Invite copied to clipboard!');
+    setTimeout(() => setCopySuccess(''), 3000);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Share Room</h2>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        
+        <div className="share-content">
+          <div className="share-icon">👥</div>
+          <h3>Invite Collaborators</h3>
+          <p>Share this room ID with your team members to collaborate in real-time:</p>
+          
+          <div className="room-id-display">
+            <code>{roomId}</code>
+          </div>
+          
+          <button className="copy-invite-btn" onClick={copyInviteLink}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy Invite Message
+          </button>
+          
+          {copySuccess && (
+            <div className="copy-success-message">{copySuccess}</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // EditorRoom component
 const EditorRoom = () => {
   const navigate = useNavigate();
@@ -97,6 +144,7 @@ const EditorRoom = () => {
   const [currentTheme, setCurrentTheme] = useState('vs-dark');
   const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
   const [isLearningPanelOpen, setIsLearningPanelOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -106,11 +154,10 @@ const EditorRoom = () => {
       navigate("/login");
     }
     
-    // Load saved theme
-    const savedTheme = localStorage.getItem("editorTheme");
-    if (savedTheme) {
-      setCurrentTheme(savedTheme);
-    }
+    // Load saved theme and apply to entire page
+    const savedTheme = localStorage.getItem("editorTheme") || 'vs-dark';
+    setCurrentTheme(savedTheme);
+    document.body.setAttribute('data-theme', savedTheme);
   }, [navigate]);
 
   useEffect(() => {
@@ -321,6 +368,7 @@ const EditorRoom = () => {
   const handleThemeChange = (theme) => {
     setCurrentTheme(theme);
     localStorage.setItem("editorTheme", theme);
+    document.body.setAttribute('data-theme', theme);
   };
 
   if (!joined) {
@@ -414,79 +462,106 @@ const EditorRoom = () => {
       <div className="editor-container">
         <div className="sidebar">
           <div className="room-info">
-            <h2>Code Room: {roomId}</h2>
+            <h2>Room: {roomId}</h2>
+            <button onClick={() => setIsShareModalOpen(true)} className="share-button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+              Share Room
+            </button>
             <button onClick={copyRoomId} className="copy-button">
-              Copy Id
+              Copy ID
             </button>
             {copySuccess && <span className="copy-success">{copySuccess}</span>}
           </div>
-          <h3>Users:</h3>
-          <ul>
-            {users.map((user, i) => (
-              <li key={i}>{user.slice(0, 8)}...</li>
-            ))}
-          </ul>
+          
+          <div className="users-section">
+            <h3>Connected Users ({users.length})</h3>
+            <div className="users-list">
+              {users.map((user, i) => (
+                <div key={i} className="user-item">
+                  <div className="user-avatar">
+                    {user.slice(0, 1).toUpperCase()}
+                  </div>
+                  <span className="user-name">{user.slice(0, 12)}</span>
+                  <div className="user-status"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <p className="typing-indicator">{typing}</p>
-          <select className="language-selector" value={language} onChange={handleLanguageChange}>
-            <option value="javascript">JavaScript</option>
-            <option value="typescript">TypeScript</option>
-            <option value="python">Python</option>
-            <option value="java">Java</option>
-            <option value="cpp">C++</option>
-            <option value="c">C</option>
-            <option value="php">PHP</option>
-            <option value="go">Go</option>
-            <option value="rust">Rust</option>
-          </select>
+          
+          <div className="control-group">
+            <h3>Programming Language</h3>
+            <select className="language-selector" value={language} onChange={handleLanguageChange}>
+              <option value="javascript">JavaScript</option>
+              <option value="typescript">TypeScript</option>
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+              <option value="cpp">C++</option>
+              <option value="c">C</option>
+              <option value="php">PHP</option>
+              <option value="go">Go</option>
+              <option value="rust">Rust</option>
+            </select>
+          </div>
 
-          {/* Learn Language Button */}
-          <button 
-            className="learn-language-button" 
-            onClick={() => setIsLearningPanelOpen(true)}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-            </svg>
-            Learn {language.charAt(0).toUpperCase() + language.slice(1)}
-          </button>
+          <div className="controls-section">
+            <button 
+              className="learn-language-button" 
+              onClick={() => setIsLearningPanelOpen(true)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              Learn {language.charAt(0).toUpperCase() + language.slice(1)}
+            </button>
 
-          {/* Theme Selector Button */}
-          <button 
-            className="theme-selector-button" 
-            onClick={() => setIsThemeSelectorOpen(true)}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-              <line x1="1" y1="12" x2="3" y2="12"/>
-              <line x1="21" y1="12" x2="23" y2="12"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-            </svg>
-            Themes
-          </button>
+            <button 
+              className="theme-selector-button" 
+              onClick={() => setIsThemeSelectorOpen(true)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+              Themes
+            </button>
 
-          <button className="file-manager-button" onClick={() => setIsFileManagerOpen(true)}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-            </svg>
-            File Manager
-          </button>
+            <button className="file-manager-button" onClick={() => setIsFileManagerOpen(true)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+              </svg>
+              File Manager
+            </button>
 
-          <button className="ai-assistant-button" onClick={() => setIsAIChatOpen(true)}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 17L12 22L22 17" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 12L12 17L22 12" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            AI Assistant
-          </button>
+            <button className="ai-assistant-button" onClick={() => setIsAIChatOpen(true)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 17L12 22L22 17" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 12L12 17L22 12" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              AI Assistant
+            </button>
+          </div>
 
           <button className="leave-button" onClick={leaveRoom}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
             Leave Room
           </button>
         </div>
@@ -505,50 +580,68 @@ const EditorRoom = () => {
             value={code}
             onChange={handleCodeChange}
             theme={currentTheme}
-            options={{ minimap: { enabled: false }, fontSize: 14 }}
+            options={{ 
+              minimap: { enabled: false }, 
+              fontSize: 14,
+              scrollBeyondLastLine: false,
+              automaticLayout: true
+            }}
           />
 
           <div className="io-section">
-            <textarea
-              className="input-box"
-              placeholder="Enter program input..."
-              value={inputCode}
-              onChange={(e) => setInputCode(e.target.value)}
-            />
-            <button className="run-btn" onClick={runCode}>Run Code</button>
+            <div className="input-group">
+              <h3>Input</h3>
+              <textarea
+                className="input-box"
+                placeholder="Enter program input..."
+                value={inputCode}
+                onChange={(e) => setInputCode(e.target.value)}
+              />
+            </div>
+            
+            <button className="run-btn" onClick={runCode}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              Run Code
+            </button>
 
             <div className="output-section">
-              <h3>Output:</h3>
+              <h3>Output</h3>
               <pre className="output-console">{outPut || "No output yet..."}</pre>
 
               {errors && (
-                <>
-                  <h3 style={{ color: "#ff5252" }}>Errors:</h3>
+                <div className="error-section">
+                  <h3>Errors</h3>
                   <pre className="error-console">{errors}</pre>
-                </>
+                </div>
               )}
             </div>
           </div>
         </div>
 
         <div className="chat-section">
-          <h3>Chat Section</h3>
+          <div className="chat-header">
+            <h3>Team Chat</h3>
+            <span className="online-count">{users.length} online</span>
+          </div>
+          
           <div className="chat-messages">
             {messages.map((msg, index) => (
               <div key={index} className={`chat-message ${msg.user === userName ? "self" : ""}`}>
+                <div className="message-header">
+                  <strong>{msg.user.slice(0, 8)}</strong>
+                  <span className="message-time">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                </div>
                 {msg.type === "voice" ? (
-                  <>
-                    <strong>{msg.user.slice(0, 8)}:</strong>
-                    <VoiceMessage message={msg} />
-                  </>
+                  <VoiceMessage message={msg} />
                 ) : (
-                  <>
-                    <strong>{msg.user.slice(0, 8)}:</strong> {msg.text}
-                  </>
+                  <div className="message-text">{msg.text}</div>
                 )}
               </div>
             ))}
           </div>
+          
           <div className="chat-input-container">
             <input
               type="text"
@@ -563,6 +656,12 @@ const EditorRoom = () => {
               roomId={roomId}
               userName={userName}
             />
+            <button className="send-button" onClick={sendMessage}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -595,6 +694,12 @@ const EditorRoom = () => {
         isOpen={isLearningPanelOpen}
         onClose={() => setIsLearningPanelOpen(false)}
         language={language}
+      />
+
+      <RoomShareModal
+        roomId={roomId}
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
       />
     </>
   );
