@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react"; // Added useRef
+import { useEffect, useState, useRef } from "react";
 import "./App.css";
 import io from "socket.io-client";
 import Editor from "@monaco-editor/react";
@@ -21,10 +21,10 @@ const ProtectedRoute = ({ children }) => {
   return token && user ? children : <Navigate to="/login" />;
 };
 
-// VoiceMessage component - FIXED: useRef instead of useState
+// VoiceMessage component
 const VoiceMessage = ({ message }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef(null); // FIXED: Changed from useState to useRef
+  const audioRef = useRef(null);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -132,15 +132,12 @@ const EditorRoom = () => {
   const [outPut, setOutPut] = useState("");
   const [errors, setErrors] = useState("");
   const [inputCode, setInputCode] = useState("");
-  const [version, setVersion] = useState("*");
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [showRoomOptions, setShowRoomOptions] = useState(true);
   const [isFileManagerOpen, setIsFileManagerOpen] = useState(false);
   const [currentFile, setCurrentFile] = useState(null);
-  
-  // New state for theme and learning panel
   const [currentTheme, setCurrentTheme] = useState('vs-dark');
   const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
   const [isLearningPanelOpen, setIsLearningPanelOpen] = useState(false);
@@ -154,7 +151,6 @@ const EditorRoom = () => {
       navigate("/login");
     }
     
-    // Load saved theme and apply to entire page
     const savedTheme = localStorage.getItem("editorTheme") || 'vs-dark';
     setCurrentTheme(savedTheme);
     document.body.setAttribute('data-theme', savedTheme);
@@ -642,7 +638,6 @@ const EditorRoom = () => {
             ))}
           </div>
           
-          {/* FIXED: Removed send button from chat input */}
           <div className="chat-input-container">
             <input
               type="text"
