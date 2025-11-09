@@ -144,14 +144,16 @@ const themes = [
   }
 ];
 
-const handleThemeSelect = (themeId) => {
-  onThemeChange(themeId);
-  
-  // Apply theme to entire document
-  document.documentElement.setAttribute('data-theme', themeId);
-  
-  // Store theme preference
-  localStorage.setItem("editorTheme", themeId);
+const ThemeSelector = ({ isOpen, onClose, currentTheme, onThemeChange }) => {
+  // Handle theme selection
+  const handleThemeSelect = (themeId) => {
+    onThemeChange(themeId);
+    
+    // Apply theme to entire document
+    document.documentElement.setAttribute('data-theme', themeId);
+    
+    // Store theme preference
+    localStorage.setItem("editorTheme", themeId);
     
     // For custom themes, we need to define them in Monaco
     const customThemes = {
@@ -243,6 +245,9 @@ const handleThemeSelect = (themeId) => {
       localStorage.setItem(`customTheme_${themeId}`, JSON.stringify(customThemes[themeId]));
     }
   };
+
+  // Don't render if not open
+  if (!isOpen) return null;
 
   return (
     <div className="theme-selector-overlay" onClick={onClose}>
