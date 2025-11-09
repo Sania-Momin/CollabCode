@@ -23,14 +23,15 @@ const FileManager = ({ isOpen, onClose, onFileSelect, currentFile, socket, roomI
     'java': 'java',
     'cpp': 'cpp',
     'c': 'c',
-    
     'php': 'php',
     'rb': 'ruby',
     'go': 'go',
     'rs': 'rust',
     'json': 'json',
     'xml': 'xml',
-    
+    'html': 'html',
+    'css': 'css',
+    'md': 'markdown'
   };
 
   const languageInitialContent = {
@@ -42,11 +43,13 @@ const FileManager = ({ isOpen, onClose, onFileSelect, currentFile, socket, roomI
     'java': '// Java file\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello World");\n    }\n}',
     'cpp': '// C++ file\n#include <iostream>\n\nint main() {\n    std::cout << "Hello World" << std::endl;\n    return 0;\n}',
     'c': '// C file\n#include <stdio.h>\n\nint main() {\n    printf("Hello World\\n");\n    return 0;\n}',
-    
     'php': '<?php\n// PHP file\necho "Hello World";\n?>',
     'rb': '# Ruby file\nputs "Hello World"',
     'go': '// Go file\npackage main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello World")\n}',
-    'rs': '// Rust file\nfn main() {\n    println!("Hello World");\n}'
+    'rs': '// Rust file\nfn main() {\n    println!("Hello World");\n}',
+    'html': '<!DOCTYPE html>\n<html>\n<head>\n    <title>Hello World</title>\n</head>\n<body>\n    <h1>Hello World!</h1>\n</body>\n</html>',
+    'css': '/* CSS file */\nbody {\n    font-family: Arial, sans-serif;\n    margin: 0;\n    padding: 20px;\n}',
+    'json': '{\n  "name": "Hello World",\n  "version": "1.0.0"\n}'
   };
 
   // Real-time file structure synchronization
@@ -86,19 +89,15 @@ const FileManager = ({ isOpen, onClose, onFileSelect, currentFile, socket, roomI
           prev.map((item) => (item.id === id ? { ...item, content } : item))
         );
       },
-      // NEW: Handle file selection from other users
       fileSelected: (file) => {
         console.log("📂 File selected by another user:", file);
         if (file && file.type === "file") {
-          // Auto-open the file that another user selected
           onFileSelect(file);
-          // Auto-expand the parent folder for better UX
           if (file.parentId) {
             setExpandedFolders(prev => new Set(prev).add(file.parentId));
           }
         }
       },
-      // NEW: Handle folder expansion from other users
       folderExpanded: (folderId) => {
         console.log("📂 Folder expanded by another user:", folderId);
         setExpandedFolders(prev => new Set(prev).add(folderId));
@@ -118,8 +117,8 @@ const FileManager = ({ isOpen, onClose, onFileSelect, currentFile, socket, roomI
       socket.on(event, handler);
     });
 
-    // Request initial file structure
-    socket.emit("getFileStructure", { roomId });
+    // Request initial file structure - FIXED event name
+    socket.emit("getFileStructure", roomId);
 
     return () => {
       Object.keys(handlers).forEach(event => {
@@ -128,31 +127,30 @@ const FileManager = ({ isOpen, onClose, onFileSelect, currentFile, socket, roomI
     };
   }, [socket, roomId, onFileSelect]);
 
- // Auto-save functionality - UPDATED to broadcast changes
-useEffect(() => {
-  if (!currentFile || !socket) return;
+  // Auto-save functionality
+  useEffect(() => {
+    if (!currentFile || !socket) return;
 
-  const autoSaveTimer = setTimeout(() => {
-    if (code !== undefined && code !== currentFile.content) {
-      socket.emit("updateFileContent", {
-        roomId,
-        fileId: currentFile.id,
-        content: code,
-      });
-      
-      // ALSO update local file structure immediately
-      setFileStructure(prev =>
-        prev.map(item =>
-          item.id === currentFile.id ? { ...item, content: code } : item
-        )
-      );
-      
-      console.log("🔄 Auto-saved and broadcasted file:", currentFile.name);
-    }
-  }, 2000);
+    const autoSaveTimer = setTimeout(() => {
+      if (code !== undefined && code !== currentFile.content) {
+        socket.emit("updateFileContent", {
+          roomId,
+          fileId: currentFile.id,
+          content: code,
+        });
+        
+        setFileStructure(prev =>
+          prev.map(item =>
+            item.id === currentFile.id ? { ...item, content: code } : item
+          )
+        );
+        
+        console.log("🔄 Auto-saved and broadcasted file:", currentFile.name);
+      }
+    }, 2000);
 
-  return () => clearTimeout(autoSaveTimer);
-}, [code, currentFile, socket, roomId]);
+    return () => clearTimeout(autoSaveTimer);
+  }, [code, currentFile, socket, roomId]);
 
   const toggleFolder = (folderId) => {
     setExpandedFolders((prev) => {
@@ -161,11 +159,9 @@ useEffect(() => {
       
       if (wasExpanded) {
         newSet.delete(folderId);
-        // Emit folder collapse to other users
         socket.emit("folderCollapsed", { roomId, folderId });
       } else {
         newSet.add(folderId);
-        // Emit folder expansion to other users
         socket.emit("folderExpanded", { roomId, folderId });
       }
       return newSet;
@@ -174,15 +170,10 @@ useEffect(() => {
 
   const handleFileClick = (file) => {
     if (file.type === "file") {
-      // Select file locally
       onFileSelect(file);
-      
-      // NEW: Broadcast file selection to all other users in the room
       socket.emit("fileSelected", { roomId, file });
-      
       console.log("📤 File selection broadcasted:", file.name);
       
-      // Auto-close file manager on mobile
       if (window.innerWidth < 768) {
         onClose();
       }
@@ -191,48 +182,58 @@ useEffect(() => {
     }
   };
 
+  // UPDATED createItem function
   const createItem = () => {
-  if (!newItemName.trim()) return;
+    if (!newItemName.trim()) return;
 
-  // Auto-detect language for initial content based on file extension
-  const fileExtension = newItemName.split('.').pop()?.toLowerCase();
-  const initialContent = languageInitialContent[fileExtension] || "// Start coding here";
+    const fileExtension = newItemName.split('.').pop()?.toLowerCase();
+    const initialContent = languageInitialContent[fileExtension] || "// Start coding here";
 
-  const newItem = {
-    id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    name: newItemName,
-    type: newItemType,
-    parentId: selectedParentId,
-    content: newItemType === "file" ? initialContent : null,
-    createdAt: new Date().toISOString(),
-    createdBy: "user",
-    lastModified: new Date().toISOString(),
+    const newItem = {
+      id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: newItemName,
+      type: newItemType,
+      parentId: selectedParentId,
+      content: newItemType === "file" ? initialContent : null,
+      createdAt: new Date().toISOString(),
+      createdBy: "user",
+      lastModified: new Date().toISOString(),
+    };
+
+    setActiveAction(`Creating ${newItemType}...`);
+    
+    // FIXED: Use correct event name and structure
+    if (newItemType === "file") {
+      socket.emit("createFile", { 
+        roomId, 
+        fileName: newItemName, 
+        parentId: selectedParentId 
+      });
+    } else {
+      socket.emit("createFolder", { 
+        roomId, 
+        folderName: newItemName, 
+        parentId: selectedParentId 
+      });
+    }
+
+    // Auto-detect language for files
+    if (newItemType === "file") {
+      const detectedLanguage = languageMap[fileExtension] || 'javascript';
+      socket.emit("languageChange", { roomId, language: detectedLanguage });
+      
+      setTimeout(() => {
+        onFileSelect(newItem);
+        socket.emit("fileSelected", { roomId, file: newItem, language: detectedLanguage });
+      }, 100);
+    }
+    
+    setShowNewItemModal(false);
+    setNewItemName("");
+    setSelectedParentId(null);
+    setTimeout(() => setActiveAction(null), 2000);
   };
 
-  setActiveAction(`Creating ${newItemType}...`);
-  socket.emit("createItem", { roomId, item: newItem });
-  
-  // NEW: If it's a file, auto-detect language and broadcast to ALL users
-  if (newItemType === "file") {
-    const detectedLanguage = languageMap[fileExtension] || 'javascript';
-    
-    // Broadcast language change to ALL users (including yourself)
-    socket.emit("languageChange", { roomId, language: detectedLanguage });
-    console.log(`🔄 Broadcasting language change to ${detectedLanguage} for new file: ${newItem.name}`);
-    
-    // Small delay to ensure file is created on server first, then open it
-    setTimeout(() => {
-      onFileSelect(newItem);
-      socket.emit("fileSelected", { roomId, file: newItem, language: detectedLanguage });
-    }, 100);
-  }
-  
-  setShowNewItemModal(false);
-  setNewItemName("");
-  setSelectedParentId(null);
-  
-  setTimeout(() => setActiveAction(null), 2000);
-};
   const getAllChildren = (parentId) => {
     const children = fileStructure.filter(item => item.parentId === parentId);
     let allChildren = children.map(c => c.id);
@@ -246,13 +247,14 @@ useEffect(() => {
     return allChildren;
   };
 
+  // UPDATED renameItem function
   const renameItem = () => {
     if (!newItemName.trim() || !itemToRename) return;
 
     setActiveAction("Renaming...");
-    socket.emit("renameItem", {
+    socket.emit("renameFile", {
       roomId,
-      itemId: itemToRename.id,
+      fileId: itemToRename.id,
       name: newItemName,
     });
 
@@ -262,32 +264,27 @@ useEffect(() => {
     setTimeout(() => setActiveAction(null), 2000);
   };
 
-  // ✅ Add this function inside FileManager component (after renameItem and before handleContextMenu)
-const deleteItem = (item) => {
-  const confirmDelete = window.confirm(
-    `Are you sure you want to delete ${item.type === "folder" ? "folder" : "file"} "${item.name}"?` +
-    (item.type === "folder" ? "\nThis will also delete all contents inside the folder." : "")
-  );
-  
-  if (!confirmDelete) return;
+  // UPDATED deleteItem function
+  const deleteItem = (item) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${item.type === "folder" ? "folder" : "file"} "${item.name}"?` +
+      (item.type === "folder" ? "\nThis will also delete all contents inside the folder." : "")
+    );
+    
+    if (!confirmDelete) return;
 
-  setActiveAction(`Deleting ${item.type}...`);
+    setActiveAction(`Deleting ${item.type}...`);
 
-  // Get all children if it's a folder
-  const childrenIds = getAllChildren(item.id);
+    // FIXED: Use correct event name
+    if (item.type === "file") {
+      socket.emit("deleteFile", { roomId, fileId: item.id });
+    } else {
+      socket.emit("deleteFile", { roomId, fileId: item.id });
+    }
 
-  // Emit delete event for item and its children
-  [item.id, ...childrenIds].forEach(itemId => {
-    socket.emit("deleteItem", { roomId, itemId });
-  });
-
-  // Close context menu
-  setContextMenu(null);
-
-  // Reset action indicator after 2 seconds
-  setTimeout(() => setActiveAction(null), 2000);
-};
-
+    setContextMenu(null);
+    setTimeout(() => setActiveAction(null), 2000);
+  };
 
   const handleContextMenu = (e, item) => {
     e.preventDefault();
@@ -307,24 +304,23 @@ const deleteItem = (item) => {
   };
 
   const saveCurrentFile = () => {
-  if (currentFile && code !== undefined) {
-    setActiveAction("Saving...");
-    socket.emit("updateFileContent", {
-      roomId,
-      fileId: currentFile.id,
-      content: code,
-    });
-    
-    // Update local state immediately
-    setFileStructure(prev =>
-      prev.map(item =>
-        item.id === currentFile.id ? { ...item, content: code } : item
-      )
-    );
-    
-    setTimeout(() => setActiveAction(null), 1500);
-  }
-};
+    if (currentFile && code !== undefined) {
+      setActiveAction("Saving...");
+      socket.emit("updateFileContent", {
+        roomId,
+        fileId: currentFile.id,
+        content: code,
+      });
+      
+      setFileStructure(prev =>
+        prev.map(item =>
+          item.id === currentFile.id ? { ...item, content: code } : item
+        )
+      );
+      
+      setTimeout(() => setActiveAction(null), 1500);
+    }
+  };
 
   const getFileIcon = (fileName, isFolder = false, isExpanded = false) => {
     if (isFolder) {
