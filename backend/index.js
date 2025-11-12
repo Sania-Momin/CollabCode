@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
-import aiRoutes from "./routes/aiRoutes.js";
+import aiRoutes from "./routes/ai.js";  // Changed from aiRoutes.js
 import FileStructure from "./models/FileStructure.js";
 
 dotenv.config();
