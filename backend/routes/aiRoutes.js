@@ -12,54 +12,69 @@ if (!GEMINI_API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
-
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" }); // ✅ Using gemini-2.5-pro
 
 router.post("/chat", async (req, res) => {
+  console.log("🤖 AI Chat request received"); // Log when request comes in
+  
   try {
     const { message, history } = req.body;
-
+    
     if (!message || message.trim() === "") {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Optional: Combine message history for conversational context
+    // Build conversation context from history
     const conversationContext = history
       ? history.map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`).join("\n")
       : "";
 
     const prompt = `
-You are an expert programming assistant.
-You help explain code, debug, and provide best practices.
+You are an expert programming assistant specialized in helping developers.
+You provide clear, accurate, and helpful responses about code, debugging, and best practices.
 
 Previous conversation:
 ${conversationContext}
 
 User: ${message}
+
+Please provide a helpful and detailed response.
 `;
 
-    // Generate AI response
+    console.log("📤 Sending request to Gemini 2.5 Pro..."); // Log before API call
+    
     const result = await model.generateContent(prompt);
     const aiResponse = result.response.text();
-
+    
+    console.log("✅ Response received from Gemini"); // Log success
+    
     res.json({ response: aiResponse });
+    
   } catch (error) {
-    console.error("AI API Error:", error.response?.data || error.message);
-
-    if (error.response?.status === 429) {
-      return res.status(429).json({
-        error: "Too many requests. Please wait a moment and try again.",
-      });
-    }
-
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    console.error("❌ AI API Error:", error.message);
+    console.error("Error details:", error.response?.data || error);
+    
+    // Handle specific error cases
+    if (error.message?.includes("API key")) {
       return res.status(500).json({
-        error: "AI service configuration error. Please check your API key.",
+        error: "Invalid API key. Please check your GEMINI_API_KEY in .env file.",
+      });
+    }
+    
+    if (error.status === 429 || error.message?.includes("quota")) {
+      return res.status(429).json({
+        error: "API quota exceeded. Please try again later.",
       });
     }
 
+    if (error.status === 503 || error.message?.includes("overloaded")) {
+      return res.status(503).json({
+        error: "AI service is temporarily overloaded. Please try again.",
+      });
+    }
+    
     res.status(500).json({
-      error: "Failed to get AI response. Please try again later.",
+      error: "Failed to get AI response: " + error.message,
     });
   }
 });
