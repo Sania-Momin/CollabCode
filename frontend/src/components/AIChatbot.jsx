@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import "./AIChatbot.css";
 
+// ✅ Backend URL configuration
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 const AIChatbot = ({ isOpen, onClose, currentCode, currentLanguage }) => {
   const [messages, setMessages] = useState([
     {
@@ -43,7 +46,8 @@ const AIChatbot = ({ isOpen, onClose, currentCode, currentLanguage }) => {
         contextMessage = `I'm working with ${currentLanguage} code:\n\`\`\`${currentLanguage}\n${currentCode}\n\`\`\`\n\nQuestion: ${input}`;
       }
 
-      const response = await fetch("http://localhost:5000/api/ai/chat", {
+      // ✅ Using dynamic backend URL
+      const response = await fetch(`${BACKEND_URL}/api/ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -51,6 +55,10 @@ const AIChatbot = ({ isOpen, onClose, currentCode, currentLanguage }) => {
           history: messages.slice(-6) // Last 3 exchanges for context
         })
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
       
