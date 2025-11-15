@@ -64,7 +64,12 @@ const VoiceMessage = ({ message }) => {
         </div>
         <span className="voice-duration">{message.duration}s</span>
       </div>
-      <audio ref={audioRef} src={message.audio} onEnded={() => setIsPlaying(false)} />
+      <audio 
+        ref={audioRef} 
+        src={message.audio} 
+        onEnded={() => setIsPlaying(false)}
+        onError={(e) => console.error("Audio error:", e)}
+      />
     </div>
   );
 };
@@ -446,25 +451,32 @@ const EditorRoom = () => {
     setChatInput("");
   };
 
-  // ✅ FIXED: Voice message function - prevent duplicates
+  // ✅ FIXED: Voice message function - properly handle voice messages
   const handleVoiceSend = (voiceMessage) => {
-    console.log("🎤 handleVoiceSend called with:", voiceMessage);
+    console.log("🎤 handleVoiceSend called with voice data:", voiceMessage);
+    
+    if (!voiceMessage || !voiceMessage.audio) {
+      console.error("❌ Invalid voice message data:", voiceMessage);
+      return;
+    }
     
     // ✅ Add the voice message to local state immediately
     const voiceMsg = {
       ...voiceMessage,
-      user: userName,
+      user: userName, // Add username here
       type: "voice",
       timestamp: new Date().toISOString()
     };
     
-    console.log("✅ Adding voice message to local state");
+    console.log("✅ Adding voice message to local state:", voiceMsg);
     setMessages((prev) => [...prev, voiceMsg]);
     
     // ✅ Emit to other users (backend will NOT send back to sender)
     if (socket && roomId) {
       console.log("📤 Emitting voice message to socket");
       socket.emit("voiceMessage", { roomId, message: voiceMsg });
+    } else {
+      console.error("❌ Cannot emit voice message: socket or roomId missing");
     }
   };
 
@@ -807,7 +819,7 @@ const EditorRoom = () => {
             {messages.map((msg, index) => (
               <div key={index} className={`chat-message ${msg.user === userName ? "self" : ""} ${msg.type === "system" ? "system" : ""}`}>
                 <div className="message-header">
-                  <strong>{msg.type === "system" ? "System" : msg.user.slice(0, 8)}</strong>
+                  <strong>{msg.type === "system" ? "System" : msg.user?.slice(0, 8) || "Unknown"}</strong>
                   <span className="message-time">
                     {new Date(msg.timestamp || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </span>
