@@ -12,8 +12,6 @@ import VoiceRecorder from "./components/VoiceRecorder";
 import ThemeSelector from "./components/ThemeSelector";
 import LanguageLearning from "./components/LanguageLearning";
 
-const socket = io(import.meta.env.VITE_BACKEND_URL);
-
 // ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -121,6 +119,7 @@ const RoomShareModal = ({ roomId, isOpen, onClose }) => {
 // EditorRoom component
 const EditorRoom = () => {
   const navigate = useNavigate();
+  const [socket, setSocket] = useState(null);
   const [joined, setJoined] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [userName, setUserName] = useState("");
@@ -142,6 +141,7 @@ const EditorRoom = () => {
   const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
   const [isLearningPanelOpen, setIsLearningPanelOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState("connecting");
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -157,38 +157,103 @@ const EditorRoom = () => {
   }, [navigate]);
 
   useEffect(() => {
-    socket.on("chatMessage", (msg) => setMessages((prev) => [...prev, msg]));
-    socket.on("voiceMessage", (msg) => setMessages((prev) => [...prev, msg]));
-    socket.on("userJoined", (users) => setUsers(users));
-    socket.on("codeUpdate", (newCode) => setCode(newCode));
+    // Create socket connection when component mounts
+    const newSocket = io(import.meta.env.VITE_BACKEND_URL);
+    
+    newSocket.on("connect", () => {
+      console.log("✅ Connected to server with ID:", newSocket.id);
+      setConnectionStatus("connected");
+    });
+
+    newSocket.on("disconnect", () => {
+      console.log("❌ Disconnected from server");
+      setConnectionStatus("disconnected");
+    });
+
+    newSocket.on("connect_error", (error) => {
+      console.error("❌ Connection error:", error);
+      setConnectionStatus("error");
+    });
+
+    setSocket(newSocket);
+
+    // Cleanup on unmount
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    // Socket event listeners
+    socket.on("chatMessage", (msg) => {
+      console.log("💬 Received chat message:", msg);
+      setMessages((prev) => [...prev, msg]);
+    });
+    
+    socket.on("voiceMessage", (msg) => {
+      console.log("🎤 Received voice message:", msg);
+      setMessages((prev) => [...prev, msg]);
+    });
+    
+    socket.on("userJoined", (users) => {
+      console.log("👥 Users in room:", users);
+      setUsers(users);
+    });
+    
+    socket.on("codeUpdate", (newCode) => {
+      console.log("📝 Received code update");
+      setCode(newCode);
+    });
+    
     socket.on("userTyping", (user) => {
       setTyping(`${user.slice(0, 8)}... is Typing`);
       setTimeout(() => setTyping(""), 2000);
     });
-    socket.on("languageUpdate", (newLanguage) => setLanguage(newLanguage));
+    
+    socket.on("languageUpdate", (newLanguage) => {
+      console.log("🔤 Language changed to:", newLanguage);
+      setLanguage(newLanguage);
+    });
+    
     socket.on("codeResponse", (response) => {
+      console.log("🔄 Code execution response:", response);
       setOutPut(response.output || "");
       setErrors(response.stderr || "");
     });
 
     socket.on("fileContentUpdated", ({ id, content }) => {
+      console.log("📄 File content updated:", id);
       if (currentFile && currentFile.id === id) {
         setCode(content);
       }
     });
 
-    socket.on("fileSelected", ({ file, language: detectedLanguage }) => {
+    socket.on("fileSelected", (file) => {
+      console.log("📁 File selected:", file);
       if (file && file.type === "file") {
         setCurrentFile(file);
         setCode(file.content || "// File is empty");
-        
-        if (detectedLanguage && detectedLanguage !== language) {
-          setLanguage(detectedLanguage);
-        }
       }
     });
 
+    socket.on("userNotification", (notification) => {
+      console.log("🔔 User notification:", notification);
+      setMessages((prev) => [...prev, {
+        type: "system",
+        text: notification.message,
+        timestamp: new Date().toISOString()
+      }]);
+    });
+
+    socket.on("joinError", (error) => {
+      console.error("❌ Join error:", error);
+      alert(`Failed to join room: ${error}`);
+    });
+
     return () => {
+      // Clean up all event listeners
       socket.off("chatMessage");
       socket.off("voiceMessage");
       socket.off("userJoined");
@@ -198,39 +263,69 @@ const EditorRoom = () => {
       socket.off("codeResponse");
       socket.off("fileContentUpdated");
       socket.off("fileSelected");
+      socket.off("userNotification");
+      socket.off("joinError");
     };
-  }, [currentFile, language]);
+  }, [socket, currentFile, language]);
 
   useEffect(() => {
-    const handleBeforeUnload = () => socket.emit("leaveRoom");
+    const handleBeforeUnload = () => {
+      if (socket) {
+        socket.emit("leaveRoom");
+      }
+    };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, []);
+  }, [socket]);
 
   const createRoom = () => {
+    if (!socket) {
+      console.error("❌ Socket not connected");
+      alert("Connection not ready. Please wait...");
+      return;
+    }
+    
     const uniqueRoomId = `room-${Math.random().toString(36).substr(2, 9)}`;
     setRoomId(uniqueRoomId);
-    socket.emit("join", { roomId: uniqueRoomId, userName });
-    setJoined(true);
-    setShowRoomOptions(false);
+    console.log(`🏠 Creating new room: ${uniqueRoomId}`);
+    
+    // Use setTimeout to ensure state is updated before emitting
+    setTimeout(() => {
+      socket.emit("join", { roomId: uniqueRoomId, userName });
+      setJoined(true);
+      setShowRoomOptions(false);
+    }, 100);
   };
 
   const handleJoinRoom = () => {
+    if (!socket) {
+      console.error("❌ Socket not connected");
+      alert("Connection not ready. Please wait...");
+      return;
+    }
+    
     if (roomId && userName) {
+      console.log(`🚀 Joining room: ${roomId} as ${userName}`);
       socket.emit("join", { roomId, userName });
       setJoined(true);
       setShowRoomOptions(false);
+    } else {
+      alert("Please enter a room ID");
     }
   };
 
   const leaveRoom = () => {
-    socket.emit("leaveRoom");
+    if (socket) {
+      socket.emit("leaveRoom");
+    }
     setJoined(false);
     setRoomId("");
     setCode("// start code here");
     setLanguage("javascript");
     setShowRoomOptions(true);
     setCurrentFile(null);
+    setUsers([]);
+    setMessages([]);
   };
 
   const copyRoomId = () => {
@@ -241,10 +336,12 @@ const EditorRoom = () => {
 
   const handleCodeChange = (newCode) => {
     setCode(newCode);
-    socket.emit("codeChange", { roomId, code: newCode });
-    socket.emit("typing", { roomId, userName });
+    if (socket && roomId) {
+      socket.emit("codeChange", { roomId, code: newCode });
+      socket.emit("typing", { roomId, userName });
+    }
     
-    if (currentFile) {
+    if (currentFile && socket) {
       socket.emit("updateFileContent", {
         roomId,
         fileId: currentFile.id,
@@ -256,10 +353,17 @@ const EditorRoom = () => {
   const handleLanguageChange = (e) => {
     const newLanguage = e.target.value;
     setLanguage(newLanguage);
-    socket.emit("languageChange", { roomId, language: newLanguage });
+    if (socket && roomId) {
+      socket.emit("languageChange", { roomId, language: newLanguage });
+    }
   };
 
   const runCode = () => {
+    if (!socket) {
+      alert("Connection not ready. Please wait...");
+      return;
+    }
+
     const nonExecutableLanguages = ['html', 'css', 'json', 'markdown'];
     
     if (nonExecutableLanguages.includes(language)) {
@@ -317,14 +421,22 @@ const EditorRoom = () => {
   };
 
   const sendMessage = () => {
+    if (!socket) {
+      alert("Connection not ready. Please wait...");
+      return;
+    }
+    
     if (chatInput.trim() === "") return;
-    const msg = { user: userName, text: chatInput, type: "text" };
+    const msg = { user: userName, text: chatInput, type: "text", timestamp: new Date().toISOString() };
     socket.emit("chatMessage", { roomId, msg });
     setMessages((prev) => [...prev, msg]);
     setChatInput("");
   };
 
   const handleVoiceSend = (voiceMessage) => {
+    if (socket && roomId) {
+      socket.emit("voiceMessage", { roomId, message: voiceMessage });
+    }
     setMessages((prev) => [...prev, voiceMessage]);
   };
 
@@ -357,7 +469,9 @@ const EditorRoom = () => {
     
     if (detectedLanguage !== language) {
       setLanguage(detectedLanguage);
-      socket.emit("languageChange", { roomId, language: detectedLanguage });
+      if (socket && roomId) {
+        socket.emit("languageChange", { roomId, language: detectedLanguage });
+      }
     }
   };
 
@@ -367,11 +481,41 @@ const EditorRoom = () => {
     document.body.setAttribute('data-theme', theme);
   };
 
+  // Render loading state if socket not connected
+  if (connectionStatus === "connecting") {
+    return (
+      <div className="join-container">
+        <div className="loading-state">
+          <h2>Connecting to server...</h2>
+          <div className="loading-spinner"></div>
+          <p>Please wait while we establish connection</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (connectionStatus === "error") {
+    return (
+      <div className="join-container">
+        <div className="error-state">
+          <h2>Connection Error</h2>
+          <p>Failed to connect to the server. Please check your internet connection and try again.</p>
+          <button onClick={() => window.location.reload()} className="retry-button">
+            Retry Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!joined) {
     if (showRoomOptions) {
       return (
         <div className="join-container">
           <div className="room-options-container">
+            <div className="connection-status connected">
+              ✅ Connected to server
+            </div>
             <h1>Welcome, {userName.split(' ')[0]}! 👋</h1>
             <p className="subtitle">Choose how you want to collaborate</p>
             
@@ -410,6 +554,10 @@ const EditorRoom = () => {
     return (
       <div className="join-container">
         <div className="join-form">
+          <div className="connection-status connected">
+            ✅ Connected to server
+          </div>
+          
           <button className="back-button" onClick={() => setShowRoomOptions(true)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="19" y1="12" x2="5" y2="12"/>
@@ -431,6 +579,7 @@ const EditorRoom = () => {
                 placeholder="Enter Room ID (e.g., room-abc123xyz)"
                 value={roomId}
                 onChange={(e) => setRoomId(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleJoinRoom()}
               />
             </div>
             
@@ -457,6 +606,10 @@ const EditorRoom = () => {
     <>
       <div className="editor-container">
         <div className="sidebar">
+          <div className="connection-status connected">
+            ✅ Connected - {users.length} users in room
+          </div>
+          
           <div className="room-info">
             <h2>Room: {roomId}</h2>
             <button onClick={() => setIsShareModalOpen(true)} className="share-button">
@@ -624,10 +777,12 @@ const EditorRoom = () => {
           
           <div className="chat-messages">
             {messages.map((msg, index) => (
-              <div key={index} className={`chat-message ${msg.user === userName ? "self" : ""}`}>
+              <div key={index} className={`chat-message ${msg.user === userName ? "self" : ""} ${msg.type === "system" ? "system" : ""}`}>
                 <div className="message-header">
-                  <strong>{msg.user.slice(0, 8)}</strong>
-                  <span className="message-time">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                  <strong>{msg.type === "system" ? "System" : msg.user.slice(0, 8)}</strong>
+                  <span className="message-time">
+                    {new Date(msg.timestamp || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  </span>
                 </div>
                 {msg.type === "voice" ? (
                   <VoiceMessage message={msg} />
