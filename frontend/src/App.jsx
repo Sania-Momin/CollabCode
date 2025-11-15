@@ -446,8 +446,10 @@ const EditorRoom = () => {
     setChatInput("");
   };
 
-  // ✅ FIXED: Voice message function - add to local state immediately
+  // ✅ FIXED: Voice message function - prevent duplicates
   const handleVoiceSend = (voiceMessage) => {
+    console.log("🎤 handleVoiceSend called with:", voiceMessage);
+    
     // ✅ Add the voice message to local state immediately
     const voiceMsg = {
       ...voiceMessage,
@@ -456,10 +458,12 @@ const EditorRoom = () => {
       timestamp: new Date().toISOString()
     };
     
+    console.log("✅ Adding voice message to local state");
     setMessages((prev) => [...prev, voiceMsg]);
     
     // ✅ Emit to other users (backend will NOT send back to sender)
     if (socket && roomId) {
+      console.log("📤 Emitting voice message to socket");
       socket.emit("voiceMessage", { roomId, message: voiceMsg });
     }
   };
@@ -825,12 +829,8 @@ const EditorRoom = () => {
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             />
-            <VoiceRecorder 
-              onSendVoice={handleVoiceSend}
-              socket={socket}
-              roomId={roomId}
-              userName={userName}
-            />
+            {/* ✅ FIXED: VoiceRecorder only receives onSendVoice callback */}
+            <VoiceRecorder onSendVoice={handleVoiceSend} />
           </div>
         </div>
       </div>
