@@ -12,7 +12,8 @@ if (!GEMINI_API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" }); // ✅ Using gemini-2.5-pro
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
 
 router.post("/chat", async (req, res) => {
   console.log("🤖 AI Chat request received"); // Log when request comes in
