@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import "./VoiceRecorder.css";
 
-const VoiceRecorder = ({ onSendVoice, socket, roomId, userName }) => {
+const VoiceRecorder = ({ onSendVoice }) => { // ✅ Remove socket, roomId, userName props
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioURL, setAudioURL] = useState(null);
@@ -71,27 +71,28 @@ const VoiceRecorder = ({ onSendVoice, socket, roomId, userName }) => {
     setAudioURL(null);
     setShowPreview(false);
     setRecordingTime(0);
+    audioChunksRef.current = [];
   };
 
   const sendVoiceMessage = () => {
     if (audioURL && audioChunksRef.current.length > 0) {
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       
-      // Convert blob to base64 for socket transmission
+      // Convert blob to base64 for transmission
       const reader = new FileReader();
       reader.readAsDataURL(audioBlob);
       reader.onloadend = () => {
         const base64Audio = reader.result;
         
         const voiceMessage = {
-          user: userName,
           audio: base64Audio,
           duration: recordingTime,
           timestamp: new Date().toISOString(),
           type: "voice"
         };
 
-        socket.emit("voiceMessage", { roomId, message: voiceMessage });
+        // ✅ ONLY call the callback - let parent handle socket emission
+        console.log("🎤 VoiceRecorder: Calling onSendVoice callback");
         onSendVoice(voiceMessage);
         
         // Reset
