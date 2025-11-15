@@ -212,12 +212,15 @@ io.on("connection", (socket) => {
     }
   });
 
+  // ✅ FIXED: Chat and Voice messages - only broadcast to other users
   socket.on("chatMessage", ({ roomId, msg }) => {
-    io.to(roomId).emit("chatMessage", msg); // Use io.to to broadcast to all including sender
+    // Broadcast to all OTHER users in the room (excluding sender)
+    socket.to(roomId).emit("chatMessage", msg);
   });
 
   socket.on("voiceMessage", ({ roomId, message }) => {
-    io.to(roomId).emit("voiceMessage", message); // Use io.to to broadcast to all including sender
+    // Broadcast to all OTHER users in the room (excluding sender)
+    socket.to(roomId).emit("voiceMessage", message);
   });
 
   // File structure events
