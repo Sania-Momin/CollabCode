@@ -188,12 +188,14 @@ const EditorRoom = () => {
 
     // Socket event listeners
     socket.on("chatMessage", (msg) => {
-      console.log("💬 Received chat message:", msg);
+      console.log("💬 Received chat message from another user:", msg);
+      // Messages received from socket are only from other users (backend uses socket.to)
       setMessages((prev) => [...prev, msg]);
     });
     
     socket.on("voiceMessage", (msg) => {
-      console.log("🎤 Received voice message:", msg);
+      console.log("🎤 Received voice message from another user:", msg);
+      // Messages received from socket are only from other users (backend uses socket.to)
       setMessages((prev) => [...prev, msg]);
     });
     
@@ -420,6 +422,7 @@ const EditorRoom = () => {
     });
   };
 
+  // ✅ FIXED: Send message function - add to local state immediately
   const sendMessage = () => {
     if (!socket) {
       alert("Connection not ready. Please wait...");
@@ -427,17 +430,38 @@ const EditorRoom = () => {
     }
     
     if (chatInput.trim() === "") return;
-    const msg = { user: userName, text: chatInput, type: "text", timestamp: new Date().toISOString() };
-    socket.emit("chatMessage", { roomId, msg });
+    const msg = { 
+      user: userName, 
+      text: chatInput, 
+      type: "text", 
+      timestamp: new Date().toISOString() 
+    };
+    
+    // ✅ Add the message to local state immediately (user sees their own message instantly)
     setMessages((prev) => [...prev, msg]);
+    
+    // ✅ Emit to other users (backend will NOT send back to sender)
+    socket.emit("chatMessage", { roomId, msg });
+    
     setChatInput("");
   };
 
+  // ✅ FIXED: Voice message function - add to local state immediately
   const handleVoiceSend = (voiceMessage) => {
+    // ✅ Add the voice message to local state immediately
+    const voiceMsg = {
+      ...voiceMessage,
+      user: userName,
+      type: "voice",
+      timestamp: new Date().toISOString()
+    };
+    
+    setMessages((prev) => [...prev, voiceMsg]);
+    
+    // ✅ Emit to other users (backend will NOT send back to sender)
     if (socket && roomId) {
-      socket.emit("voiceMessage", { roomId, message: voiceMessage });
+      socket.emit("voiceMessage", { roomId, message: voiceMsg });
     }
-    setMessages((prev) => [...prev, voiceMessage]);
   };
 
   const handleFileSelect = (file) => {
