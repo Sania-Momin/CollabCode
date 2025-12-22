@@ -13,8 +13,9 @@ if (!GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
-  model: "models/gemini-1.5-flash"
+  model: "models/gemini-2.5-flash"
 });
+
 
 
 
